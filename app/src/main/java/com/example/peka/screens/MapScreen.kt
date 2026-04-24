@@ -18,8 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.peka.OSMMapView
-import com.example.peka.StopsViewModel
+import com.example.peka.modules.OSMMapView
+import com.example.peka.database.StopsViewModel
 
 @Composable
 fun MapScreen(
@@ -46,11 +46,13 @@ fun MapScreen(
             Text("Mapa Przystanków", fontWeight = FontWeight.Bold, fontSize = 20.sp)
         }
 
-        // 3.2 Wywołanie komponentu mapy (zajmuje całą resztę ekranu)
-        OSMMapView(
+
+        Row() {
+            OSMMapView(
 //            stops = myStops,
-            stops = stopsToShow,
-            modifier = Modifier.fillMaxSize()
-        )
+                stops = stopsToShow,
+                modifier = Modifier.fillMaxSize().padding(30.dp)
+            )
+        }
     }
 }

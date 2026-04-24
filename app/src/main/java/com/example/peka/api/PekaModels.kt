@@ -1,4 +1,4 @@
-package com.example.peka
+package com.example.peka.api
 
 data class PekaResponse<T>(
     val success: T

@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.peka.ApiViewModel
-import com.example.peka.DepartureCard
-import com.example.peka.StopMonitorCard
+import com.example.peka.api.ApiViewModel
+import com.example.peka.modules.DepartureCard
+import com.example.peka.modules.StopMonitorCard
 import com.example.peka.database.BusStop
 
 @Composable

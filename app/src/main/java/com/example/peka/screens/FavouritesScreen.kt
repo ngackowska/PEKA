@@ -9,27 +9,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.example.peka.modules.Screen
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun FavoritesScreen(navController: NavController) {
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        Text("ekran główny")
-        Button(onClick = { navController.navigate("api_screen") }) {
-            Text("Przejdź do drugiego ekranu")
-        }
-        Text("ekran mapy")
-        Button(onClick = { navController.navigate("map_screen") }) {
-            Text("Przejdź do mapy")
+        Text("ekran ulubionych")
+        Button(onClick = { navController.navigate("home_screen") }) {
+            Text("wróć")
         }
 
-        Text("DASHBOARD")
-        Button(onClick = { navController.navigate("dashboard_screen") }) {
-            Text("DASHBOARD")
-        }
+
     }
+
+
 }

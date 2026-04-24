@@ -1,13 +1,12 @@
-package com.example.peka
+package com.example.peka.database
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.PersistentCacheSettings
-
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import com.example.peka.database.BusStop
 
 class StopsViewModel : ViewModel() {
 
@@ -62,10 +61,10 @@ class StopsViewModel : ViewModel() {
                 }
 
                 _allStops.value = stopsList
-                android.util.Log.d("TEST_BAZY", "Pobrano dokładnie ${stopsList.size} przystanków z chmury.")
+                Log.d("TEST_BAZY", "Pobrano dokładnie ${stopsList.size} przystanków z chmury.")
                 if (stopsList.isNotEmpty()) {
                     val first = stopsList[0]
-                    android.util.Log.d("TEST_BAZY", "Pierwszy to: ${first.stop_name}, lat: ${first.stop_lat}, lon: ${first.stop_lon}")
+                    Log.d("TEST_BAZY", "Pierwszy to: ${first.stop_name}, lat: ${first.stop_lat}, lon: ${first.stop_lon}")
                 }
             }
             .addOnFailureListener { exception ->

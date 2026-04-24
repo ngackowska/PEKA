@@ -1,4 +1,4 @@
-package com.example.peka
+package com.example.peka.api
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
