@@ -1,54 +1,24 @@
 package com.example.peka
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.peka.ui.theme.PEKATheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.lazy.items
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.example.peka.BuildConfig.MAPS_API_KEY
-import com.example.peka.database.BusStop
 import com.example.peka.modules.MainNavigationContainer
 import com.example.peka.screens.ApiScreen
-import com.example.peka.screens.DashboardScreen
 import com.example.peka.screens.DetailsScreen
 import com.example.peka.screens.HomeScreen
 import com.example.peka.screens.LoginScreen
 import com.example.peka.screens.MapScreen
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
-
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import com.google.firebase.firestore.PersistentCacheSettings
@@ -58,7 +28,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ===== NOWY KOD: Globalna konfiguracja bazy Firebase =====
         try {
             val db = FirebaseFirestore.getInstance()
             val settings = FirebaseFirestoreSettings.Builder()
@@ -66,10 +35,8 @@ class MainActivity : ComponentActivity() {
                 .build()
             db.firestoreSettings = settings
         } catch (e: Exception) {
-            // Ignorujemy błąd - oznacza to, że baza już zdążyła się zainicjować
-            // swoimi domyślnymi ustawieniami (które i tak wspierają cache)
         }
-        // =========================================================
+
 
 //        enableEdgeToEdge()
         setContent {
@@ -114,12 +81,7 @@ fun AppNavigation() {
             MainNavigationContainer(
                 rootNavController = navController,
                 onLogoutClick = {
-                    // Ten kod wykona się, gdy klikniesz przycisk w FavoritesScreen!
-
-                    // Używamy głównego kontrolera, żeby przeskoczyć do ekranu logowania
                     navController.navigate("login_screen") {
-                        // Czyścimy WSZYSTKO od samego początku stosu
-                        // inclusive = true oznacza, że usuwamy też sam startowy punkt
                         popUpTo(0) { inclusive = true }
                     }
                 })

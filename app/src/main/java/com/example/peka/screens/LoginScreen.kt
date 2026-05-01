@@ -24,6 +24,7 @@ import com.example.peka.viewmodels.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.example.peka.BuildConfig
 
 @Composable
 fun LoginScreen(
@@ -76,13 +77,12 @@ fun LoginScreen(
                     // Konfiguracja opcji logowania.
                     // Wymagany jest tu "Web Client ID" z konsoli Google Cloud
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestIdToken("177511652913-qfcksr47smn85s34g0v71eb2ni0btunj.apps.googleusercontent.com") // <- PAMIĘTAJ O TYM!
+                        .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
                         .requestEmail()
                         .build()
 
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
 
-                    // Wymuszenie wylogowania przed ponownym pokazaniem okna (opcjonalne, zapobiega auto-logowaniu na złe konto)
                     googleSignInClient.signOut().addOnCompleteListener {
                         launcher.launch(googleSignInClient.signInIntent)
                     }
@@ -97,53 +97,4 @@ fun LoginScreen(
         }
     }
 
-
-//    var email by remember { mutableStateOf("") }
-//    var password by remember { mutableStateOf("") }
-//
-//    Column(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .padding(16.dp),
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        verticalArrangement = Arrangement.Center
-//    ) {
-//        OutlinedTextField(
-//            value = email,
-//            onValueChange = { email = it },
-//            label = { Text("E-mail") },
-//            modifier = Modifier.fillMaxWidth(),
-//            singleLine = true
-//        )
-//
-//        Spacer(modifier = Modifier.height(8.dp))
-//
-//        OutlinedTextField(
-//            value = password,
-//            onValueChange = { password = it },
-//            label = { Text("Hasło") },
-//            visualTransformation = PasswordVisualTransformation(),
-//            modifier = Modifier.fillMaxWidth(),
-//            singleLine = true
-//        )
-//
-//        Spacer(modifier = Modifier.height(16.dp))
-//
-//        Button(
-//            onClick = {
-//                // Miejsce na wywołanie funkcji logowania
-//            },
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            Text("Zaloguj")
-//        }
-//
-//        Button(onClick = { navController.navigate("dashboard_screen") }) {
-//            Text("DASHBOARD")
-//        }
-//
-//        Button(onClick = { navController.navigate("api_screen") }) {
-//            Text("API")
-//        }
-//    }
 }
