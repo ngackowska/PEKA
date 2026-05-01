@@ -32,7 +32,6 @@ fun MapScreen(
 //    val stopsToShow = allStops.filter { it.stop_name == "Kórnicka" }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Górny pasek z przyciskiem powrotu
         Row(
             modifier = Modifier
                 .fillMaxWidth()

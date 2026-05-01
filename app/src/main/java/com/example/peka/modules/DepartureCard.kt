@@ -18,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.peka.api.TimeData
 
+// Komponent wyświetlający informacje o danym odjeździe pojazdu
+// (pojedynczy odjazd danej linii widoczny np. po kliknięciu w kafelek na dashboard)
+
 @Composable
 fun DepartureCard(timeData: TimeData) {
     Card(

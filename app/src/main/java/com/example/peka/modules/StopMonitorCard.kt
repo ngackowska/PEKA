@@ -23,6 +23,7 @@ import com.example.peka.api.TimeData
 import com.example.peka.database.BusStop
 import androidx.compose.foundation.clickable
 
+// Komponent kafelka z dashboard (obrazek mapki + odjazdy)
 @Composable
 fun StopMonitorCard(
     stop: BusStop,
@@ -40,6 +41,7 @@ fun StopMonitorCard(
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
 
+            // Obrazek mapki z Geoapify
             Box(
                 modifier = Modifier
                     .weight(0.4f)
@@ -48,11 +50,7 @@ fun StopMonitorCard(
                 contentAlignment = Alignment.Center
             ) {
 
-
                 val mapImageUrl = getStaticMapUrl(lat = stop.stop_lat, lon = stop.stop_lon)
-
-
-                println("MÓJ LINK DO MAPY: $mapImageUrl")
 
                 AsyncImage(
                     model = mapImageUrl,
@@ -61,7 +59,6 @@ fun StopMonitorCard(
                         .fillMaxHeight(),
                     contentScale = ContentScale.Crop
                 )
-
             }
 
             Column(
@@ -82,6 +79,7 @@ fun StopMonitorCard(
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
 
+                // Lista odjazdów
                 val displayLimit = 3
                 if (departures.isEmpty()) {
                     Text(text = "Brak odjazdów", color = Color.Red, fontSize = 12.sp)
@@ -95,6 +93,7 @@ fun StopMonitorCard(
     }
 }
 
+// Pobranie obrazka mapi z Geoapify
 fun getStaticMapUrl(lat: Double, lon: Double): String {
     val apiKey = MAPS_API_KEY
     val zoom = 17
@@ -105,6 +104,7 @@ fun getStaticMapUrl(lat: Double, lon: Double): String {
     return "https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=400&center=lonlat:$lon,$lat&zoom=$zoom&marker=lonlat:$lon,$lat;type:material;color:%23ff0000&apiKey=$apiKey"
 }
 
+// Wiersz w liście odjazdów
 @Composable
 fun MonitorRow(timeInfo: TimeData) {
     Row(

@@ -20,6 +20,10 @@ import com.example.peka.screens.DashboardScreen
 import com.example.peka.screens.MapScreen
 import com.example.peka.screens.FavoritesScreen
 
+
+// Nawigacja dashboard (dolny pasek - ulubione, dashboard, mapa)
+
+
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
     object Favorites : Screen("favorites", "Ulubione", { Icon(Icons.Filled.Favorite, contentDescription = null) })
     object Dashboard : Screen("dashboard", "Dashboard", { Icon(Icons.Filled.Home, contentDescription = null) })
@@ -73,7 +77,6 @@ fun MainNavigationContainer(
                 onLogout = onLogoutClick
             ) }
             composable(Screen.Dashboard.route) { DashboardScreen(
-//                navController = bottomNavController
                 navController = rootNavController
             ) }
             composable(Screen.Map.route) { MapScreen(

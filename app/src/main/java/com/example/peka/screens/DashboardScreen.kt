@@ -71,6 +71,8 @@ fun DashboardScreen(
 
     // ########################################################
 
+    // Aktualnie - sztywna lokalizacja użytkownika (Posnania)
+
     val userLat = 52.39837217947031
     val userLon = 16.954065647695536
 
@@ -95,7 +97,7 @@ fun DashboardScreen(
                 )
             }
             items(nearest) { stop ->
-                // Pobieramy odjazdy dla każdego wyświetlonego przystanku
+                // Pobranie czasów odjazdów co 20s
                 LaunchedEffect(stop.stop_code) {
                     while (isActive) {
                         dashboardViewModel.fetchDeparturesForStop(stop.stop_code)
@@ -115,7 +117,4 @@ fun DashboardScreen(
             }
         }
     }
-
-
-
 }

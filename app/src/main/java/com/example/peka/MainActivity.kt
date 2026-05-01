@@ -15,7 +15,6 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.peka.modules.MainNavigationContainer
 import com.example.peka.screens.DetailsScreen
-import com.example.peka.screens.HomeScreen
 import com.example.peka.screens.LoginScreen
 import com.example.peka.screens.MapScreen
 import com.google.firebase.firestore.FirebaseFirestore
@@ -63,9 +62,6 @@ fun AppNavigation() {
     }
 
     NavHost(navController = navController, startDestination = startScreen) {
-        composable(route = "home_screen") {
-            HomeScreen(navController = navController)
-        }
         composable(route = "login_screen") {
             LoginScreen(navController = navController)
         }
@@ -73,6 +69,7 @@ fun AppNavigation() {
         composable(route = "map_screen") {
             MapScreen(navController = navController)
         }
+
         composable(route = "dashboard_screen") {
             MainNavigationContainer(
                 rootNavController = navController,

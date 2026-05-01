@@ -96,6 +96,10 @@ fun DetailsScreen(
                 }
             }
 
+            // ####################################################
+            // TU DAŁAM OBRAZEK PRZYSTANKU ALE MOŻNA DAĆ MAPĘ? IDK
+            // ####################################################
+
             if (stopDetails != null) {
 
                 Box(
