@@ -42,7 +42,7 @@ fun ApiScreen(
             Text("Wróć")
         }
 
-        StopMonitorCard(BusStop(106, "TRAU43", "Traugutta", 52.3847652100, 16.9151159000, "A"), departuresList)
+//        StopMonitorCard(BusStop(106, "TRAU43", "Traugutta", 52.3847652100, 16.9151159000, "A"), departuresList)
 
         Text(
             text = "Przystanek: $stopName",

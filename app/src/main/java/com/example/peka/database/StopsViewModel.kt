@@ -21,13 +21,18 @@ class StopsViewModel(application: Application) : AndroidViewModel(application) {
     private val sharedPreferences = application.getSharedPreferences("peka_prefs", Context.MODE_PRIVATE)
     private val VERSION_KEY = "stops_version"
 
+//    init {
+//        val settings = FirebaseFirestoreSettings.Builder()
+//            .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
+//            .build()
+//
+//        db.firestoreSettings = settings
+//
+//        checkAndFetchStops()
+//    }
+
     init {
-        val settings = FirebaseFirestoreSettings.Builder()
-            .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
-            .build()
-
-        db.firestoreSettings = settings
-
+        // Zamiast od razu pobierać bazę, sprawdzamy wersję
         checkAndFetchStops()
     }
 

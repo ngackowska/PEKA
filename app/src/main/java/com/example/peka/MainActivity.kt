@@ -34,21 +34,44 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.lazy.items
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.peka.BuildConfig.MAPS_API_KEY
 import com.example.peka.database.BusStop
 import com.example.peka.modules.MainNavigationContainer
 import com.example.peka.screens.ApiScreen
 import com.example.peka.screens.DashboardScreen
+import com.example.peka.screens.DetailsScreen
 import com.example.peka.screens.HomeScreen
 import com.example.peka.screens.LoginScreen
 import com.example.peka.screens.MapScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.firebase.firestore.PersistentCacheSettings
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enableEdgeToEdge()
+        // ===== NOWY KOD: Globalna konfiguracja bazy Firebase =====
+        try {
+            val db = FirebaseFirestore.getInstance()
+            val settings = FirebaseFirestoreSettings.Builder()
+                .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
+                .build()
+            db.firestoreSettings = settings
+        } catch (e: Exception) {
+            // Ignorujemy błąd - oznacza to, że baza już zdążyła się zainicjować
+            // swoimi domyślnymi ustawieniami (które i tak wspierają cache)
+        }
+        // =========================================================
+
+//        enableEdgeToEdge()
         setContent {
             PEKATheme {
                 Surface(
@@ -65,7 +88,15 @@ class MainActivity : ComponentActivity() {
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = "login_screen") {
+    val auth = FirebaseAuth.getInstance()
+
+    val startScreen = if (auth.currentUser != null) {
+        "dashboard_screen"
+    } else {
+        "login_screen"
+    }
+
+    NavHost(navController = navController, startDestination = startScreen) {
         composable(route = "home_screen") {
             HomeScreen(navController = navController)
         }
@@ -80,7 +111,31 @@ fun AppNavigation() {
             MapScreen(navController = navController)
         }
         composable(route = "dashboard_screen") {
-            MainNavigationContainer(rootNavController = navController)
+            MainNavigationContainer(
+                rootNavController = navController,
+                onLogoutClick = {
+                    // Ten kod wykona się, gdy klikniesz przycisk w FavoritesScreen!
+
+                    // Używamy głównego kontrolera, żeby przeskoczyć do ekranu logowania
+                    navController.navigate("login_screen") {
+                        // Czyścimy WSZYSTKO od samego początku stosu
+                        // inclusive = true oznacza, że usuwamy też sam startowy punkt
+                        popUpTo(0) { inclusive = true }
+                    }
+                })
         }
+
+        composable(
+            route = "stop_details/{stopCode}",
+            arguments = listOf(navArgument("stopCode") { type = NavType.StringType })
+        ) { backStackEntry ->
+
+            // Wydobywamy parametr ze ścieżki (lub podajemy pusty string jako zabezpieczenie)
+            val code = backStackEntry.arguments?.getString("stopCode") ?: ""
+
+            // Rysujemy nowy ekran i wstrzykujemy mu wydobyty kod
+            DetailsScreen(navController = navController, stopCode = code)
+        }
+
     }
 }

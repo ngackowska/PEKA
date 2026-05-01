@@ -34,6 +34,7 @@ import kotlinx.coroutines.isActive
 
 @Composable
 fun DashboardScreen(
+    navController: NavController,
     dashboardViewModel: DashboardViewModel = viewModel(),
     stopsViewModel: StopsViewModel = viewModel()
 ) {
@@ -118,7 +119,10 @@ fun DashboardScreen(
 
                 StopMonitorCard(
                     stop = stop,
-                    departures = stopDepartures
+                    departures = stopDepartures,
+                    onClick = {
+                        navController.navigate("stop_details/${stop.stop_code}")
+                    }
                 )
             }
         }

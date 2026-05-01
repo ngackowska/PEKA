@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.work.runtime.ktx)
+//    implementation(libs.firebase.auth.ktx)
 //    implementation(libs.firebase.firestore.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -86,4 +87,17 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
 
     implementation("com.google.android.gms:play-services-location:21.1.0")
+
+
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
+    // 1. Importujemy Firebase BoM (Platforma, która sama zarządza wersjami)
+    // Zwróć uwagę na słowo kluczowe 'platform' wewnątrz nawiasów!
+    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
+
+    // 2. Dodajemy Firebase Auth (bez podawania wersji i bez "-ktx", BoM zrobi to za nas)
+    implementation("com.google.firebase:firebase-auth")
+
+    // 3. Dodajemy usługi Play do obsługi okienka Google (tutaj wersję podajemy normalnie)
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 }

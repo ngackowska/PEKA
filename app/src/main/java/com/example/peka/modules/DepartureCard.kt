@@ -52,15 +52,3 @@ fun DepartureCard(timeData: TimeData) {
     }
 }
 
-fun getStaticMapUrl(lat: Double, lon: Double): String {
-    // UWAGA: Zarejestruj się na darmowym koncie Geoapify (lub Mapbox) i podmień ten klucz
-    val apiKey = MAPS_API_KEY
-    val zoom = 16 // Przybliżenie mapy
-
-    Log.d("KORDY", lat.toString())
-    Log.d("KORDY", lon.toString())
-
-    // Zwracamy gotowy link URL.
-    // Zawiera on centrum mapy (center) oraz czerwoną pinezkę (marker) w tym samym miejscu.
-    return "https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=400&center=lonlat:$lon,$lat&zoom=$zoom&marker=lonlat:$lon,$lat;type:material;color:%23ff0000&apiKey=$apiKey"
-}

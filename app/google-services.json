@@ -12,7 +12,20 @@
           "package_name": "com.example.peka"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "177511652913-lrfl9l8afg6uud5cr8h47h295kve5c6t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.peka",
+            "certificate_hash": "5ece39ab16f397b6ddd9da0806b87efb24427966"
+          }
+        },
+        {
+          "client_id": "177511652913-qfcksr47smn85s34g0v71eb2ni0btunj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDKJV2WFstCQnUif3aG4jSYOTzbm7o5ARY"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "177511652913-qfcksr47smn85s34g0v71eb2ni0btunj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

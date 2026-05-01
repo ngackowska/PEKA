@@ -10,9 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.example.peka.modules.Screen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun FavoritesScreen(navController: NavController) {
+fun FavoritesScreen(
+    navController: NavController,
+    onLogout: () -> Unit
+) {
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -24,6 +28,13 @@ fun FavoritesScreen(navController: NavController) {
             Text("wróć")
         }
 
+        Button(onClick = {
+            FirebaseAuth.getInstance().signOut()
+
+            onLogout()
+        }) {
+            Text("Wyloguj się")
+        }
 
     }
 

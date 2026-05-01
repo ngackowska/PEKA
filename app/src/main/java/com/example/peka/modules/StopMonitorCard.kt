@@ -1,5 +1,6 @@
 package com.example.peka.modules
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,19 +18,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.peka.BuildConfig.MAPS_API_KEY
 import com.example.peka.api.TimeData
 import com.example.peka.database.BusStop
+import androidx.compose.foundation.clickable
 
 @Composable
 fun StopMonitorCard(
     stop: BusStop,
-    departures: List<TimeData> // Używamy Twojego modelu z poprzednich kroków
+    departures: List<TimeData>,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(140.dp) // Stała wysokość karty, aby lista wyglądała równo
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
@@ -45,10 +50,7 @@ fun StopMonitorCard(
                     .background(Color.LightGray), // Tło zastępcze
                 contentAlignment = Alignment.Center
             ) {
-                // Tutaj w przyszłości wstawisz AsyncImage z biblioteki Coil (ładowanie z URL)
-                // lub Image z zasobów lokalnych (R.drawable.map_placeholder)
 
-//                Text("Mapka\n(Obrazek)", fontSize = 12.sp, color = Color.DarkGray)
 
                 val mapImageUrl = getStaticMapUrl(lat = stop.stop_lat, lon = stop.stop_lon)
 
@@ -99,6 +101,19 @@ fun StopMonitorCard(
             }
         }
     }
+}
+
+fun getStaticMapUrl(lat: Double, lon: Double): String {
+    // UWAGA: Zarejestruj się na darmowym koncie Geoapify (lub Mapbox) i podmień ten klucz
+    val apiKey = MAPS_API_KEY
+    val zoom = 17 // Przybliżenie mapy
+
+    Log.d("KORDY", lat.toString())
+    Log.d("KORDY", lon.toString())
+
+    // Zwracamy gotowy link URL.
+    // Zawiera on centrum mapy (center) oraz czerwoną pinezkę (marker) w tym samym miejscu.
+    return "https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=400&center=lonlat:$lon,$lat&zoom=$zoom&marker=lonlat:$lon,$lat;type:material;color:%23ff0000&apiKey=$apiKey"
 }
 
 // Komponent pomocniczy dla pojedynczego wiersza na monitorze

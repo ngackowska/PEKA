@@ -29,7 +29,10 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
 }
 
 @Composable
-fun MainNavigationContainer(rootNavController: NavHostController) {
+fun MainNavigationContainer(
+    rootNavController: NavHostController,
+    onLogoutClick: () -> Unit
+) {
     val bottomNavController = rememberNavController()
     val items = listOf(
         Screen.Favorites,
@@ -71,9 +74,13 @@ fun MainNavigationContainer(rootNavController: NavHostController) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(Screen.Favorites.route) { FavoritesScreen(
-                navController = bottomNavController
+                navController = bottomNavController,
+                onLogout = onLogoutClick
             ) }
-            composable(Screen.Dashboard.route) { DashboardScreen() }
+            composable(Screen.Dashboard.route) { DashboardScreen(
+//                navController = bottomNavController
+                navController = rootNavController
+            ) }
             composable(Screen.Map.route) { MapScreen(
                 navController = bottomNavController
             ) }
