@@ -1,5 +1,7 @@
 package com.example.peka.viewmodels
 
+import android.annotation.SuppressLint
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.peka.api.TimeData
@@ -9,8 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import android.location.Location
+import android.os.Looper
+import androidx.lifecycle.AndroidViewModel
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 
-class DashboardViewModel : ViewModel() {
+class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
     // Przechowuje odjazdy przypisane do konkretnego kodu przystanku (stop_code)
     private val _departuresMap = MutableStateFlow<Map<String, List<TimeData>>>(emptyMap())
@@ -22,6 +28,40 @@ class DashboardViewModel : ViewModel() {
 
     private val _nearestStops = MutableStateFlow<List<BusStop>>(emptyList())
     val nearestStops: StateFlow<List<BusStop>> = _nearestStops
+
+
+    // Stan przechowujący aktualną pozycję użytkownika
+    private val _userLocation = MutableStateFlow<android.location.Location?>(null)
+    val userLocation: StateFlow<android.location.Location?> = _userLocation
+
+    // Klient usług lokalizacyjnych Google
+    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application)
+
+    // Adnotacja tłumiąca błąd o braku uprawnień (sprawdzimy je w warstwie UI przed wywołaniem tej funkcji)
+    @SuppressLint("MissingPermission")
+    fun startLocationUpdates() {
+        // Konfiguracja reguł odświeżania lokalizacji
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L) // sprawdzaj co ~10 sekund
+            .setMinUpdateDistanceMeters(30f) // aktualizuj pozycję tylko jeśli użytkownik przeszedł co najmniej 30 metrów
+            .build()
+
+        // Co ma się stać, gdy telefon odbierze nową lokalizację
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(result: LocationResult) {
+                result.lastLocation?.let { location ->
+                    // Aktualizujemy stan. To automatycznie powiadomi UI i zaktualizuje dystans do przystanków
+                    _userLocation.value = location
+                }
+            }
+        }
+
+        // Uruchomienie ciągłego nasłuchiwania
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
+    }
 
     fun fetchDeparturesForStop(stopCode: String) {
         viewModelScope.launch {
@@ -52,7 +92,7 @@ class DashboardViewModel : ViewModel() {
         }
 
         // Zapisujemy 3 pierwsze elementy z posortowanej listy
-        _nearestStops.value = sortedStops.take(3)
+        _nearestStops.value = sortedStops.take(2)
     }
 
 }

@@ -84,4 +84,6 @@ dependencies {
 
     implementation(platform(libs.firebase.bom))
     implementation("com.google.firebase:firebase-firestore")
+
+    implementation("com.google.android.gms:play-services-location:21.1.0")
 }

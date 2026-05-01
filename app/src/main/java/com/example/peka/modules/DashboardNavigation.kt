@@ -73,9 +73,7 @@ fun MainNavigationContainer(rootNavController: NavHostController) {
             composable(Screen.Favorites.route) { FavoritesScreen(
                 navController = bottomNavController
             ) }
-            composable(Screen.Dashboard.route) { DashboardScreen(
-                navController = bottomNavController
-            ) }
+            composable(Screen.Dashboard.route) { DashboardScreen() }
             composable(Screen.Map.route) { MapScreen(
                 navController = bottomNavController
             ) }

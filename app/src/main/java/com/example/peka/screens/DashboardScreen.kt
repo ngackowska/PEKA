@@ -1,5 +1,8 @@
 package com.example.peka.screens
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,10 +29,11 @@ import com.example.peka.database.StopsViewModel
 import com.example.peka.modules.DepartureCard
 import com.example.peka.modules.StopMonitorCard
 import com.example.peka.viewmodels.DashboardViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 @Composable
 fun DashboardScreen(
-    navController: NavController,
     dashboardViewModel: DashboardViewModel = viewModel(),
     stopsViewModel: StopsViewModel = viewModel()
 ) {
@@ -43,8 +47,43 @@ fun DashboardScreen(
     val nearest by dashboardViewModel.nearestStops.collectAsState()
     val departuresMap by dashboardViewModel.departuresMap.collectAsState()
 
-    val userLat = 52.4064
-    val userLon = 16.9252
+    // ##################################################
+    // lokalizacja użytkownika - do sprawdzenia w poznaniu
+//
+//    val userLocation by dashboardViewModel.userLocation.collectAsState()
+//
+//    // Rejestrator zapytania o uprawnienia
+//    val permissionLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.RequestPermission()
+//    ) { isGranted ->
+//        if (isGranted) {
+//            // Gdy użytkownik kliknie "Zezwól", uruchamiamy strumień lokalizacji
+//            dashboardViewModel.startLocationUpdates()
+//        } else {
+//            // Opcjonalnie: obsługa braku zgody (np. wyświetlenie komunikatu)
+//        }
+//    }
+//
+//    // Pytamy o uprawnienia tylko raz przy starcie ekranu
+//    LaunchedEffect(Unit) {
+//        permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+//    }
+//
+//
+//    LaunchedEffect(allStops, userLocation) {
+//        if (allStops.isNotEmpty() && userLocation != null) {
+//            dashboardViewModel.calculateNearestStops(
+//                userLat = userLocation!!.latitude,
+//                userLon = userLocation!!.longitude,
+//                allStops = allStops
+//            )
+//        }
+//    }
+
+    // ########################################################
+
+    val userLat = 52.39837217947031
+    val userLon = 16.954065647695536
 
     // Lepiej przy zmianie lokalizacji użytkownika???
     // ALBO NIE WIEM
@@ -60,7 +99,7 @@ fun DashboardScreen(
         if (nearest.isNotEmpty()) {
             item {
                 Text(
-                    text = "3 Najbliższe przystanki",
+                    text = "Najbliższe przystanki",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
@@ -69,7 +108,10 @@ fun DashboardScreen(
             items(nearest) { stop ->
                 // Pobieramy odjazdy dla każdego wyświetlonego przystanku
                 LaunchedEffect(stop.stop_code) {
-                    dashboardViewModel.fetchDeparturesForStop(stop.stop_code)
+                    while (isActive) {
+                        dashboardViewModel.fetchDeparturesForStop(stop.stop_code)
+                        delay(20_000L)
+                    }
                 }
 
                 val stopDepartures = departuresMap[stop.stop_code] ?: emptyList()
