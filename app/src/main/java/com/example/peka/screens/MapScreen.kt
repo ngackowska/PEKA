@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.peka.modules.OSMMapView
-import com.example.peka.database.StopsViewModel
+import com.example.peka.viewmodels.StopsViewModel
 
 @Composable
 fun MapScreen(

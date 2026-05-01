@@ -1,32 +1,20 @@
 package com.example.peka.screens
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.peka.api.ApiViewModel
-import com.example.peka.database.BusStop
-import com.example.peka.database.StopsViewModel
-import com.example.peka.modules.DepartureCard
+import com.example.peka.viewmodels.StopsViewModel
 import com.example.peka.modules.StopMonitorCard
 import com.example.peka.viewmodels.DashboardViewModel
 import kotlinx.coroutines.delay
@@ -128,32 +116,6 @@ fun DashboardScreen(
         }
     }
 
-
-
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        Text("ekran dashboard")
-//        Button(onClick = { navController.navigate("api_screen") }) {
-//            Text("wróć")
-//        }
-//
-//
-//
-//
-//    }
-
-//    LazyColumn(
-//        verticalArrangement = Arrangement.spacedBy(8.dp)
-//    ) {
-//        items(stopsToShow) { stop ->
-//            StopMonitorCard(
-//                BusStop(stop.stop_id,
-//            )
-//        }
-//    }
 
 
 }

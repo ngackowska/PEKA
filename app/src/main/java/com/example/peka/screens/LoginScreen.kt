@@ -13,12 +13,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.peka.viewmodels.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -36,26 +33,22 @@ fun LoginScreen(
     val isLoading by authViewModel.isLoading.collectAsState()
     val authResult by authViewModel.authResult.collectAsState()
 
-    // Reakcja na sukces logowania - przekierowanie do głównego ekranu
     LaunchedEffect(authResult) {
         if (authResult == true) {
             navController.navigate("dashboard_screen") {
-                popUpTo("login_screen") { inclusive = true } // Usuwamy ekran logowania ze stosu
+                popUpTo("login_screen") { inclusive = true }
             }
         }
     }
 
-    // Rejestrator wyniku okienka Google
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
-                // Wydobywamy Token Google
                 val account = task.getResult(ApiException::class.java)
                 account.idToken?.let { token ->
-                    // Przekazujemy token do ViewModelu
                     authViewModel.signInWithGoogleToken(token)
                 }
             } catch (e: ApiException) {
@@ -74,8 +67,6 @@ fun LoginScreen(
         } else {
             Button(
                 onClick = {
-                    // Konfiguracja opcji logowania.
-                    // Wymagany jest tu "Web Client ID" z konsoli Google Cloud
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
                         .requestEmail()

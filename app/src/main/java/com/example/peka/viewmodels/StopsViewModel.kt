@@ -1,12 +1,11 @@
-package com.example.peka.database
+package com.example.peka.viewmodels
 
 import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import com.example.peka.database.BusStop
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.firebase.firestore.PersistentCacheSettings
 import com.google.firebase.firestore.Source
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,7 +31,6 @@ class StopsViewModel(application: Application) : AndroidViewModel(application) {
 //    }
 
     init {
-        // Zamiast od razu pobierać bazę, sprawdzamy wersję
         checkAndFetchStops()
     }
 

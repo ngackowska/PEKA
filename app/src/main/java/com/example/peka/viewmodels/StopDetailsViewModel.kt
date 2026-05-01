@@ -16,22 +16,20 @@ import kotlinx.coroutines.launch
 
 class StopDetailsViewModel : ViewModel() {
 
-    // Trzymamy odjazdy tylko dla tego konkretnego przystanku (nie ma potrzeby używania Map/Słownika)
     private val _departures = MutableStateFlow<List<TimeData>>(emptyList())
     val departures: StateFlow<List<TimeData>> = _departures
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    // --- SEKCJA BAZY DANYCH (Nowa) ---
+
     private val db = FirebaseFirestore.getInstance()
 
-    // Używamy opcjonalnego (nullable) BusStop?, bo na początku nie mamy jeszcze danych
     private val _stopDetails = MutableStateFlow<BusStop?>(null)
     val stopDetails: StateFlow<BusStop?> = _stopDetails
 
 
-    // Wspólna funkcja startowa, która odpala i API, i bazę
+
     fun startLoadingData(stopCode: String) {
         fetchStopInfoFromFirebase(stopCode)
         startFetchingDepartures(stopCode)
@@ -39,12 +37,11 @@ class StopDetailsViewModel : ViewModel() {
 
     private fun fetchStopInfoFromFirebase(stopCode: String) {
         db.collection("bus_stops")
-            .whereEqualTo("stop_code", stopCode) // <-- Magia filtrowania
-            .limit(1) // Zabezpieczenie: interesuje nas tylko pierwszy trafiony wynik
+            .whereEqualTo("stop_code", stopCode)
+            .limit(1)
             .get(Source.CACHE)
             .addOnSuccessListener { querySnapshot ->
                 if (!querySnapshot.isEmpty) {
-                    // Pobieramy pierwszy (i jedyny) dokument z wyników
                     val document = querySnapshot.documents[0]
 
                     try {
@@ -68,10 +65,8 @@ class StopDetailsViewModel : ViewModel() {
     }
 
 
-    // Funkcja odpalana przez ekran z przekazanym kodem
     fun startFetchingDepartures(stopCode: String) {
         viewModelScope.launch {
-            // Pętla odświeżająca dane np. co 15 sekund
             while (isActive) {
                 try {
                     val p0Json = "{\"symbol\":\"$stopCode\"}"
@@ -84,7 +79,7 @@ class StopDetailsViewModel : ViewModel() {
                     _isLoading.value = false
                 }
 
-                delay(15_000L) // Czekamy 15 sekund przed kolejnym odświeżeniem
+                delay(15_000L)
             }
         }
     }

@@ -14,7 +14,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.peka.modules.MainNavigationContainer
-import com.example.peka.screens.ApiScreen
 import com.example.peka.screens.DetailsScreen
 import com.example.peka.screens.HomeScreen
 import com.example.peka.screens.LoginScreen
@@ -71,9 +70,6 @@ fun AppNavigation() {
             LoginScreen(navController = navController)
         }
 
-        composable(route = "api_screen") {
-            ApiScreen(navController = navController)
-        }
         composable(route = "map_screen") {
             MapScreen(navController = navController)
         }
@@ -91,11 +87,7 @@ fun AppNavigation() {
             route = "stop_details/{stopCode}",
             arguments = listOf(navArgument("stopCode") { type = NavType.StringType })
         ) { backStackEntry ->
-
-            // Wydobywamy parametr ze ścieżki (lub podajemy pusty string jako zabezpieczenie)
             val code = backStackEntry.arguments?.getString("stopCode") ?: ""
-
-            // Rysujemy nowy ekran i wstrzykujemy mu wydobyty kod
             DetailsScreen(navController = navController, stopCode = code)
         }
 

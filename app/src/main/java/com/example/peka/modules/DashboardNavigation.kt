@@ -9,7 +9,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -17,7 +16,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-
 import com.example.peka.screens.DashboardScreen
 import com.example.peka.screens.MapScreen
 import com.example.peka.screens.FavoritesScreen
@@ -53,13 +51,10 @@ fun MainNavigationContainer(
                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             bottomNavController.navigate(screen.route) {
-                                // Powrót do startowego ekranu przy zmianie zakładki, aby nie stosować stosu
                                 popUpTo(bottomNavController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
-                                // Unikanie wielokrotnych instancji tego samego ekranu
                                 launchSingleTop = true
-                                // Przywracanie stanu po ponownym kliknięciu zakładki
                                 restoreState = true
                             }
                         }

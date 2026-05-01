@@ -4,11 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,11 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.peka.api.ApiViewModel
-import com.example.peka.api.TimeData
-import com.example.peka.database.BusStop
 import com.example.peka.modules.DepartureCard
-import com.example.peka.modules.StopMonitorCard
 import com.example.peka.modules.getStaticMapUrl
 import com.example.peka.viewmodels.StopDetailsViewModel
 
@@ -50,7 +43,7 @@ fun DetailsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val stopDetails by viewModel.stopDetails.collectAsState()
 
-    // Odpalamy pobieranie w pętli dla przekazanego kodu przy pierwszym rysowaniu ekranu
+
     LaunchedEffect(stopCode) {
         viewModel.startLoadingData(stopCode)
     }
@@ -68,7 +61,7 @@ fun DetailsScreen(
             Text("Wróć")
         }
         if (stopDetails != null) {
-            // Skoro mamy dane z bazy, wyświetlamy ładną nazwę i strefę
+
             Text(
                 text = "${stopDetails!!.stop_name} (${stopDetails!!.zone_id})",
                 fontSize = 24.sp,
@@ -82,7 +75,7 @@ fun DetailsScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         } else {
-            // Zabezpieczenie na ułamek sekundy, zanim dane się wczytają
+
             Text(
                 text = "Przystanek: $stopCode",
                 fontSize = 24.sp,
@@ -98,7 +91,6 @@ fun DetailsScreen(
                 modifier = Modifier.weight(0.75f).fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                // Tutaj pokazujesz wszystkie odjazdy, a nie tylko np. 3 jak w Dashboardzie
                 items(departures) { timeData ->
                     DepartureCard(timeData)
                 }
@@ -111,7 +103,7 @@ fun DetailsScreen(
                         .weight(0.25f)
                         .fillMaxWidth()
                         .padding(top = 8.dp)
-                        .background(Color.LightGray), // Tło zastępcze
+                        .background(Color.LightGray),
                     contentAlignment = Alignment.Center
                 ) {
 
@@ -127,7 +119,7 @@ fun DetailsScreen(
                         modifier = Modifier
 //                        .weight(0.4f)
                             .fillMaxSize(),
-                        contentScale = ContentScale.Crop // Ważne: przycina obrazek tak, aby ładnie wypełnił swoje 40% miejsca bez zniekształceń
+                        contentScale = ContentScale.Crop
                     )
 
                 }

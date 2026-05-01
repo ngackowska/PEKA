@@ -32,7 +32,7 @@ fun StopMonitorCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(140.dp) // Stała wysokość karty, aby lista wyglądała równo
+            .height(140.dp)
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -40,14 +40,11 @@ fun StopMonitorCard(
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
 
-            // ==========================================
-            // LEWA STRONA: Mała mapka (Statyczny obraz)
-            // ==========================================
             Box(
                 modifier = Modifier
-                    .weight(0.4f) // Zajmuje 40% szerokości
+                    .weight(0.4f)
                     .fillMaxHeight()
-                    .background(Color.LightGray), // Tło zastępcze
+                    .background(Color.LightGray),
                 contentAlignment = Alignment.Center
             ) {
 
@@ -61,27 +58,23 @@ fun StopMonitorCard(
                     model = mapImageUrl,
                     contentDescription = "Mapa dla przystanku ${stop.stop_name}",
                     modifier = Modifier
-//                        .weight(0.4f)
                         .fillMaxHeight(),
-                    contentScale = ContentScale.Crop // Ważne: przycina obrazek tak, aby ładnie wypełnił swoje 40% miejsca bez zniekształceń
+                    contentScale = ContentScale.Crop
                 )
 
             }
 
-            // ==========================================
-            // PRAWA STRONA: Wirtualny Monitor
-            // ==========================================
             Column(
                 modifier = Modifier
-                    .weight(0.6f) // Zajmuje 60% szerokości
+                    .weight(0.6f)
                     .fillMaxHeight()
-                    .background(Color(0xFF1E1E1E)) // Ciemnoszare/Czarne tło monitora
+                    .background(Color(0xFF1E1E1E))
                     .padding(8.dp)
             ) {
                 // Nagłówek monitora (Nazwa przystanku)
                 Text(
                     text = stop.stop_name.uppercase(),
-                    color = Color(0xFFFFB300), // Pomarańczowy kolor (jak LED)
+                    color = Color(0xFFFFB300),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
@@ -89,7 +82,6 @@ fun StopMonitorCard(
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
 
-                // Lista odjazdów na monitorze (ograniczona np. do 3 najbliższych)
                 val displayLimit = 3
                 if (departures.isEmpty()) {
                     Text(text = "Brak odjazdów", color = Color.Red, fontSize = 12.sp)
@@ -104,19 +96,15 @@ fun StopMonitorCard(
 }
 
 fun getStaticMapUrl(lat: Double, lon: Double): String {
-    // UWAGA: Zarejestruj się na darmowym koncie Geoapify (lub Mapbox) i podmień ten klucz
     val apiKey = MAPS_API_KEY
-    val zoom = 17 // Przybliżenie mapy
+    val zoom = 17
 
     Log.d("KORDY", lat.toString())
     Log.d("KORDY", lon.toString())
 
-    // Zwracamy gotowy link URL.
-    // Zawiera on centrum mapy (center) oraz czerwoną pinezkę (marker) w tym samym miejscu.
     return "https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=400&center=lonlat:$lon,$lat&zoom=$zoom&marker=lonlat:$lon,$lat;type:material;color:%23ff0000&apiKey=$apiKey"
 }
 
-// Komponent pomocniczy dla pojedynczego wiersza na monitorze
 @Composable
 fun MonitorRow(timeInfo: TimeData) {
     Row(
@@ -129,11 +117,11 @@ fun MonitorRow(timeInfo: TimeData) {
         // Numer linii i kierunek
         Row(modifier = Modifier.weight(1f)) {
             Text(
-                text = timeInfo.line.padEnd(3, ' '), // Wyrównanie numeru linii
+                text = timeInfo.line.padEnd(3, ' '),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
-                fontFamily = FontFamily.Monospace // Czcionka o stałej szerokości liter
+                fontFamily = FontFamily.Monospace
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
