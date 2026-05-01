@@ -14,14 +14,17 @@ class ApiViewModel : ViewModel() {
     private val _stopName = MutableStateFlow("Pobieranie...")
     val stopName: StateFlow<String> = _stopName
 
+//    private val _streets = MutableStateFlow<List<StreetData>>(emptyList())
+//    val streets: StateFlow<List<StreetData>> = _streets
+
     init {
-        fetchStopPoints()
+        fetchStopPoints("{\"symbol\":\"TRAU43\"}")
     }
 
-    private fun fetchStopPoints() {
+    private fun fetchStopPoints(p0Json: String) {
         viewModelScope.launch {
             try {
-                val response = pekaApiService.getStopPoints()
+                val response = pekaApiService.getTimes(p0 = p0Json)
 
                 _departures.value = response.success.times
                 _stopName.value = response.success.bollard.name
@@ -32,4 +35,16 @@ class ApiViewModel : ViewModel() {
             }
         }
     }
+
+//    fun fetchStreets() {
+//        viewModelScope.launch {
+//            try {
+//                val response = pekaApiService.getStreets()
+//                _streets.value = response.success
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//                // Opcjonalna obsługa błędu dla ulic
+//            }
+//        }
+//    }
 }

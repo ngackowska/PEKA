@@ -12,10 +12,18 @@ interface PekaApi {
     @Headers("Content-Type: application/x-www-form-urlencoded; charset=UTF-8")
     @FormUrlEncoded
     @POST("vm/method.vm")
-    suspend fun getStopPoints(
-        @Field("method") method: String = "getTimes",
-        @Field("p0") p0: String = "{\"symbol\":\"TRAU43\"}"
+    suspend fun getTimes(
+        @Field("p0") p0: String,
+        @Field("method") method: String = "getTimes"
     ): PekaResponse<StopsData>
+
+//    @Headers("Content-Type: application/x-www-form-urlencoded; charset=UTF-8")
+//    @FormUrlEncoded
+//    @POST("vm/method.vm")
+//    suspend fun getStreets(
+//        @Field("p0") p0: String = "{}",
+//        @Field("method") method: String = "getStreets"
+//    ): PekaResponse<List<StreetData>>
 }
 
 

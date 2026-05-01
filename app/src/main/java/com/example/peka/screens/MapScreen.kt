@@ -29,7 +29,7 @@ fun MapScreen(
 
     val allStops by viewModel.allStops.collectAsState()
 //    val stopsToShow = allStops.take(10)
-    val stopsToShow = allStops.filter { it.stop_name == "Kórnicka" }
+//    val stopsToShow = allStops.filter { it.stop_name == "Kórnicka" }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Górny pasek z przyciskiem powrotu
@@ -49,8 +49,8 @@ fun MapScreen(
 
         Row() {
             OSMMapView(
-//            stops = myStops,
-                stops = stopsToShow,
+            stops = allStops,
+//                stops = stopsToShow,
                 modifier = Modifier.fillMaxSize().padding(30.dp)
             )
         }

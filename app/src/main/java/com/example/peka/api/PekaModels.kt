@@ -34,3 +34,8 @@ data class BollardData(
     val tag: String,
     val mainBollard: Boolean
 )
+
+//data class StreetData(
+//    val id: Int,
+//    val name: String
+//)
