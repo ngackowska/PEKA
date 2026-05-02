@@ -14,12 +14,13 @@ import org.osmdroid.views.overlay.Marker
 import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
-
+import org.osmdroid.config.Configuration
 
 @Composable
 fun OSMMapView(
     stops: List<BusStop>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onMarkerClick: (BusStop) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -28,24 +29,37 @@ fun OSMMapView(
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
+            Configuration.getInstance().cacheMapTileCount = 12
+            Configuration.getInstance().cacheMapTileOvershoot = 12
+
             MapView(ctx).apply {
                 setTileSource(TileSourceFactory.MAPNIK)
                 setMultiTouchControls(true)
+
+                isTilesScaledToDpi = true
+                isVerticalMapRepetitionEnabled = false
+                isHorizontalMapRepetitionEnabled = false
+
                 controller.setZoom(15.0)
 
-                setTilesScaledToDpi(true)
+//                setTilesScaledToDpi(true)
+
+
+                // ###################
+                // TU MOZNA DAC LOKALIZACJE UZYCK
+                // ######################
 
                 val poznanCenter = GeoPoint(52.4064, 16.9252)
                 controller.setCenter(poznanCenter)
 
                 addMapListener(object : MapListener {
                     override fun onScroll(event: ScrollEvent?): Boolean {
-                        updateVisibleMarkers(this@apply, currentStops)
+                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick)
                         return true
                     }
 
                     override fun onZoom(event: ZoomEvent?): Boolean {
-                        updateVisibleMarkers(this@apply, currentStops)
+                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick)
                         return true
                     }
                 })
@@ -53,14 +67,14 @@ fun OSMMapView(
             }
         },
         update = { mapView ->
-            updateVisibleMarkers(mapView, currentStops)
+            updateVisibleMarkers(mapView, currentStops, onMarkerClick)
 
         }
     )
 }
 
 
-fun updateVisibleMarkers(mapView: MapView, allStops: List<BusStop>) {
+fun updateVisibleMarkers(mapView: MapView, allStops: List<BusStop>, onMarkerClick: (BusStop) -> Unit) {
     mapView.overlays.clear()
 
     if (mapView.zoomLevelDouble < 14.5) {
@@ -81,9 +95,13 @@ fun updateVisibleMarkers(mapView: MapView, allStops: List<BusStop>) {
     visibleStops.forEach { stop ->
         val marker = Marker(mapView).apply {
             position = GeoPoint(stop.stop_lat, stop.stop_lon)
-            title = stop.stop_name
-            snippet = "Kod: ${stop.stop_code} | Strefa: ${stop.zone_id}"
+//            title = stop.stop_name
+//            snippet = "Kod: ${stop.stop_code} | Strefa: ${stop.zone_id}"
             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            setOnMarkerClickListener { _, _ ->
+                onMarkerClick(stop) // Wysyłamy kliknięty przystanek do Compose
+                true // ZWRACAMY TRUE: to blokuje domyślny dymek (snippet) biblioteki
+            }
         }
         mapView.overlays.add(marker)
     }

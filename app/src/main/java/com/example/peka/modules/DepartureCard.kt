@@ -39,9 +39,31 @@ fun DepartureCard(timeData: TimeData) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(text = "Kierunek: ${timeData.direction}")
 
-//                if (timeData.airCnd == true) {
-//                    Text(text = "Klimatyzacja: Tak", fontSize = 12.sp)
-//                }
+                // Tu jakieś ikonki pewnie apbo krótko
+                // na razie kilka przykładowych żeby zobaczyć co to (lowEntrance vs lowFloor nie wiem które to xD)
+                // do porównania z PEKA
+
+                if (timeData.airCnd == true) {
+                    Text(text = "Klimatyzacja: Tak", fontSize = 12.sp)
+                }
+
+                if (timeData.bike == true) {
+                    Text(text = "Rower: Tak", fontSize = 12.sp)
+                }
+
+                if (timeData.lowEntranceBus == true) {
+                    Text(text = "lowEntranceBus: Tak", fontSize = 12.sp)
+                }
+
+                if (timeData.lowFloorBus == true) {
+                    Text(text = "lowFloorBus: Tak", fontSize = 12.sp)
+                }
+
+                if (timeData.ticketMachine == true) {
+                    Text(text = "ticketMachine: Tak", fontSize = 12.sp)
+                }
+
+
             }
             Text(
                 text = "${timeData.minutes} min",

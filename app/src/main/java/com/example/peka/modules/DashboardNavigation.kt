@@ -80,7 +80,8 @@ fun MainNavigationContainer(
                 navController = rootNavController
             ) }
             composable(Screen.Map.route) { MapScreen(
-                navController = bottomNavController
+//                navController = bottomNavController
+                navController = rootNavController
             ) }
         }
     }
