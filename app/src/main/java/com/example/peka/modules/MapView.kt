@@ -6,8 +6,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.peka.BuildConfig
 import com.example.peka.database.BusStop
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -15,6 +15,8 @@ import org.osmdroid.events.MapListener
 import org.osmdroid.events.ScrollEvent
 import org.osmdroid.events.ZoomEvent
 import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.XYTileSource
+
 
 @Composable
 fun OSMMapView(
@@ -32,15 +34,37 @@ fun OSMMapView(
             Configuration.getInstance().cacheMapTileCount = 12
             Configuration.getInstance().cacheMapTileOvershoot = 12
 
-            MapView(ctx).apply {
-                setTileSource(TileSourceFactory.MAPNIK)
-                setMultiTouchControls(true)
 
-                isTilesScaledToDpi = true
+
+            MapView(ctx).apply {
+                // Tutaj wklej swój klucz z MapTiler
+                val mapTilerKey = BuildConfig.MAPTILER_API_KEY
+
+                // Tworzymy źródło dla MapTiler Streets v4 Dark
+                val mapTilerDark = XYTileSource(
+                    "MapTilerStreetsDark",
+                    0, // Minimalny zoom
+                    20, // Maksymalny zoom
+                    256, // Rozmiar kafelka (MapTiler obsługuje też 512 dla ekranów Retina)
+                    // TRIK: Zamiast samego ".png", dodajemy parametry autoryzacji!
+                    ".png?key=$mapTilerKey",
+                    arrayOf(
+                        "https://api.maptiler.com/maps/streets-v4-dark/256/"
+                    )
+                )
+
+                // Ustawiamy MapTiler jako główne źródło mapy!
+                setTileSource(mapTilerDark)
+
+                setMultiTouchControls(true)
+                isTilesScaledToDpi = true // rozmazana mapa
+                //isTilesScaledToDpi = false  // wolniej się ładuje ale ładna
                 isVerticalMapRepetitionEnabled = false
                 isHorizontalMapRepetitionEnabled = false
 
                 controller.setZoom(15.0)
+
+
 
 //                setTilesScaledToDpi(true)
 
