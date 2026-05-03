@@ -1,8 +1,10 @@
 package com.example.peka.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +32,7 @@ import com.example.peka.modules.DepartureCard
 import com.example.peka.modules.getStaticMapUrl
 import com.example.peka.viewmodels.StopDetailsViewModel
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun DetailsScreen(
     navController: NavController,
@@ -102,7 +105,7 @@ fun DetailsScreen(
 
             if (stopDetails != null) {
 
-                Box(
+                BoxWithConstraints(
                     modifier = Modifier
                         .weight(0.25f)
                         .fillMaxWidth()
@@ -112,7 +115,7 @@ fun DetailsScreen(
                 ) {
 
 
-                    val mapImageUrl = getStaticMapUrl(lat = stopDetails!!.stop_lat, lon = stopDetails!!.stop_lon)
+                    val mapImageUrl = getStaticMapUrl(lat = stopDetails!!.stop_lat, lon = stopDetails!!.stop_lon, width = maxWidth.value, height = maxHeight.value)
 
 
                     println("MÓJ LINK DO MAPY: $mapImageUrl")

@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.app.Activity
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
@@ -35,9 +36,14 @@ fun LoginScreen(
 
     LaunchedEffect(authResult) {
         if (authResult == true) {
+            Log.e("Zalogowano","Udało się")
             navController.navigate("dashboard_screen") {
                 popUpTo("login_screen") { inclusive = true }
             }
+        }
+        else if (authResult == false) {
+            //Text("Błąd logowania", color = androidx.compose.ui.graphics.Color.Red, modifier = Modifier.padding(top = 8.dp))
+            Log.e("Error Logowania","Błąd logowania")
         }
     }
 
@@ -51,9 +57,14 @@ fun LoginScreen(
                 account.idToken?.let { token ->
                     authViewModel.signInWithGoogleToken(token)
                 }
+
             } catch (e: ApiException) {
                 // Obsługa błędu zamknięcia okienka lub braku internetu
+                Log.e("Error Logowania","Błąd logowania")
             }
+        }
+        else {
+            Log.d("LOGIN SCREEN",result.resultCode.toString() )
         }
     }
 
@@ -67,13 +78,14 @@ fun LoginScreen(
         } else {
             Button(
                 onClick = {
+                    Log.d("LOGIN SCREEN", "KLIKNIETO")
                     val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                         .requestIdToken(BuildConfig.GOOGLE_WEB_CLIENT_ID)
                         .requestEmail()
                         .build()
-
+                    Log.d("LOGIN SCREEN", "ZBUDOWANO")
                     val googleSignInClient = GoogleSignIn.getClient(context, gso)
-
+                    Log.d("LOGIN SCREEN", "WZIĘTO KLIENTA")
                     googleSignInClient.signOut().addOnCompleteListener {
                         launcher.launch(googleSignInClient.signInIntent)
                     }
@@ -84,6 +96,10 @@ fun LoginScreen(
 
             if (authResult == false) {
                 Text("Błąd logowania", color = androidx.compose.ui.graphics.Color.Red, modifier = Modifier.padding(top = 8.dp))
+                Log.e("Error Logowania","Błąd logowania")
+            }
+            Button(onClick = { navController.navigate("dashboard_screen") }) {
+                Text("wróć")
             }
         }
     }

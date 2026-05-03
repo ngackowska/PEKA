@@ -27,7 +27,9 @@ class AuthViewModel : ViewModel() {
             .addOnSuccessListener { authResult ->
                 val user = authResult.user
                 if (user != null) {
+                    Log.d("SIGN IN", "JEST USER")
                     if (authResult.additionalUserInfo?.isNewUser == true) {
+                        Log.d("SIGN IN", "NOWY USER")
                         createNewUserProfile(user.uid, user.email, user.displayName)
                     } else {
                         _isLoading.value = false

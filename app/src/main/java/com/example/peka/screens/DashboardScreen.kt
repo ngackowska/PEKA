@@ -16,6 +16,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.peka.viewmodels.StopsViewModel
 import com.example.peka.modules.StopMonitorCard
+import com.example.peka.ui.theme.DarkHeaderText
 import com.example.peka.viewmodels.DashboardViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -86,14 +87,15 @@ fun DashboardScreen(
         }
     }
 
-    LazyColumn(modifier = Modifier.padding(16.dp)) {
+    LazyColumn(modifier = Modifier.padding(20.dp)) {
         if (nearest.isNotEmpty()) {
             item {
                 Text(
                     text = "Najbliższe przystanki",
-                    fontSize = 20.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier.padding(vertical = 0.dp, horizontal = 20.dp),
+                    color = DarkHeaderText
                 )
             }
             items(nearest) { stop ->
