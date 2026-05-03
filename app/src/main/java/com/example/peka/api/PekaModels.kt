@@ -35,6 +35,21 @@ data class BollardData(
     val mainBollard: Boolean
 )
 
+data class BollardsSuccessData(
+    val bollards: List<BollardItem>
+)
+
+data class BollardItem(
+    val directions: List<DirectionItem>,
+    val bollard: BollardData // Korzystamy z klasy, którą już masz w pliku
+)
+
+data class DirectionItem(
+    val returnVariant: Boolean,
+    val lineName: String,
+    val direction: String
+)
+
 //data class StreetData(
 //    val id: Int,
 //    val name: String

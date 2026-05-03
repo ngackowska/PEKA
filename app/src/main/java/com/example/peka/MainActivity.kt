@@ -14,6 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.example.peka.modules.MainNavigationContainer
+import com.example.peka.screens.BollardsScreen
 import com.example.peka.screens.DetailsScreen
 import com.example.peka.screens.LoginScreen
 import com.example.peka.screens.MapScreen
@@ -86,6 +87,11 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val code = backStackEntry.arguments?.getString("stopCode") ?: ""
             DetailsScreen(navController = navController, stopCode = code)
+        }
+
+        composable(route = "bollards_list/{stopName}") { backStackEntry ->
+            val stopName = backStackEntry.arguments?.getString("stopName") ?: ""
+            BollardsScreen(navController = navController, stopName = stopName)
         }
 
     }

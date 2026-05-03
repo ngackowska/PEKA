@@ -36,6 +36,28 @@ import com.example.peka.ui.theme.DarkCardBackground
 import com.example.peka.ui.theme.DarkNavIcon
 import com.example.peka.ui.theme.TransparentDarkCardBackground
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.peka.screens.BollardsScreen
+import com.example.peka.screens.DashboardScreen
+import com.example.peka.screens.MapScreen
+import com.example.peka.screens.FavoritesScreen
+import com.example.peka.screens.LiveSearchScreen
+import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.launch
 
 // Nawigacja dashboard (dolny pasek - ulubione, dashboard, mapa)
 
@@ -44,9 +66,11 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
     object Favorites : Screen("favorites", "Ulubione", { Icon(Icons.Filled.Favorite, contentDescription = null, modifier = Modifier.size(32.dp)) })
     object Dashboard : Screen("dashboard", "Dashboard", { Icon(Icons.Filled.Home, contentDescription = null, modifier = Modifier.size(32.dp)) })
     object Map : Screen("map", "Mapa", { Icon(Icons.Filled.Place, contentDescription = null, modifier = Modifier.size(32.dp)) })
+    object Search : Screen("search", "Szukaj", { Icon(Icons.Filled.Search, contentDescription = null) })
 }
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainNavigationContainer(
     rootNavController: NavHostController,
@@ -59,103 +83,223 @@ fun MainNavigationContainer(
         Screen.Map
     )
 
-    Scaffold(
-        floatingActionButtonPosition = FabPosition.Center,
-        modifier = Modifier,
-        floatingActionButton = {
-            BoxWithConstraints(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 10.dp)
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val coroutineScope = rememberCoroutineScope()
+    var searchQuery by remember { mutableStateOf("")}
 
+    val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-            ){
-                Card(modifier = Modifier
-                    .width((maxWidth.value * 0.75).dp),
-                    shape = RoundedCornerShape(50.dp),
-                    colors = CardColors(
-                        containerColor = DarkCardBackground,
-                        contentColor = TransparentDarkCardBackground,
-                        disabledContainerColor = TransparentDarkCardBackground,
-                        disabledContentColor = TransparentDarkCardBackground
-                    ),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 8.dp,     // Podstawowy cień
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        gesturesEnabled = currentRoute != Screen.Map.route,
+        drawerContent = {
+            ModalDrawerSheet(modifier = Modifier.width(300.dp)) {
+                Row() {
+                    Text(
+                        text = "ViMo",
+                        fontSize = 24.sp,
+                        modifier = Modifier.padding(16.dp)
                     )
 
-                ){
-                    NavigationBar(modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(20.dp, 5.dp),
-                        windowInsets = WindowInsets(0.dp),
-                        containerColor = DarkCardBackground,
-                    )
-                    {
-                        val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
-                        val currentDestination = navBackStackEntry?.destination
+                    IconButton(onClick = { coroutineScope.launch { drawerState.close() } }) {
+                        Icon(Icons.Default.Close, contentDescription = "Zamknij menu")
+                    }
+                }
 
-                        items.forEach { screen ->
-                            NavigationBarItem(
-                                modifier = Modifier,
-                                icon = screen.icon,
-                                label = { Text(screen.label) },
-                                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                                onClick = {
-                                    bottomNavController.navigate(screen.route) {
-                                        popUpTo(bottomNavController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
-                                    }
-                                },
-                                colors = NavigationBarItemDefaults.colors(
+                HorizontalDivider()
 
-                                    // 1. EFEKT AKTYWNEJ STRONY ("Pigułka" w tle ikony)
-                                    // Używam tu zielonego koloru z 20% przezroczystości (alpha = 0.2f) dla fajnego efektu
-                                    indicatorColor = Color(0xFF20CE55).copy(alpha = 0.0f),
-                                    // Jeśli chcesz to CAŁKOWICIE UKRYĆ, użyj: Color.Transparent
+                NavigationDrawerItem(
+                    label = { Text("Wyszukiwanie zaawansowane") },
+                    selected = currentRoute == Screen.Search.route, // Opcjonalne: podświetla element, jeśli użytkownik już jest na tym ekranie
+                    onClick = {
+                        // 1. Zamykamy menu po kliknięciu
+                        coroutineScope.launch { drawerState.close() }
 
-                                    // 2. KOLORY IKON
-                                    selectedIconColor = Color(0xFF20CE55), // Ikona aktualnej strony
-                                    unselectedIconColor = DarkNavIcon, // Ikony pozostałych stron
+                        // 2. Wywołujemy nawigację do ekranu Search
+                        bottomNavController.navigate(Screen.Search.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
 
-                                    // 3. KOLORY TEKSTÓW (jeśli etykiety są widoczne)
-                                    selectedTextColor = Color(0xFF20CE55),
-                                    unselectedTextColor = DarkNavIcon
-                                )
+                NavigationDrawerItem(
+                    label = { Text("O autorach") },
+                    selected = false,
+                    onClick = { /* TODO: Nawigacja do ekranu o autorach */ }
+                )
+                NavigationDrawerItem(
+                    label = { Text("Ustawienia") },
+                    selected = false,
+                    onClick = { /* TODO: Nawigacja do ustawień */ }
+                )
+                NavigationDrawerItem(
+                    label = { Text("Wyloguj się") },
+                    selected = false,
+                    onClick = {
+                        coroutineScope.launch { drawerState.close() }
+                        FirebaseAuth.getInstance().signOut()
+                        onLogoutClick()
+                    }
+                )
+            }
+        }
+    ) {
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        TextField(
+                            value = searchQuery,
+                            onValueChange = { newValue ->
+                                searchQuery = newValue
+
+                                // LOGIKA NAWIGACJI PRZY PISANIU:
+                                if (newValue.isNotEmpty() && currentRoute != Screen.Search.route) {
+                                    // Jeśli użytkownik zaczął pisać, idziemy do Search
+                                    bottomNavController.navigate(Screen.Search.route) { launchSingleTop = true }
+                                } else if (newValue.isEmpty() && currentRoute == Screen.Search.route) {
+                                    // Jeśli skasował cały tekst, wracamy do poprzedniego ekranu
+                                    bottomNavController.popBackStack()
+                                }
+                            },
+                            placeholder = { Text("Szukaj przystanku...") },
+                            singleLine = true,
+                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Szukaj") },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 16.dp)
+                                .height(50.dp),
+                            shape = RoundedCornerShape(25.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
                             )
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Otwórz menu")
+                        }
+                    }
+                )
+            },
+            floatingActionButtonPosition = FabPosition.Center,
+            modifier = Modifier,
+            floatingActionButton = {
+
+                if (currentRoute != Screen.Search.route) {
+                    BoxWithConstraints(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 10.dp)
+
+
+                    ){
+                        Card(modifier = Modifier
+                            .width((maxWidth.value * 0.75).dp),
+                            shape = RoundedCornerShape(50.dp),
+                            colors = CardColors(
+                                containerColor = DarkCardBackground,
+                                contentColor = TransparentDarkCardBackground,
+                                disabledContainerColor = TransparentDarkCardBackground,
+                                disabledContentColor = TransparentDarkCardBackground
+                            ),
+                            elevation = CardDefaults.cardElevation(
+                                defaultElevation = 8.dp,     // Podstawowy cień
+                            )
+
+                        ){
+                            NavigationBar(modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(20.dp, 5.dp),
+                                windowInsets = WindowInsets(0.dp),
+                                containerColor = DarkCardBackground,
+                            )
+                            {
+                                val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
+                                val currentDestination = navBackStackEntry?.destination
+
+                                items.forEach { screen ->
+                                    NavigationBarItem(
+                                        modifier = Modifier,
+                                        icon = screen.icon,
+                                        label = { Text(screen.label) },
+                                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                        onClick = {
+                                            bottomNavController.navigate(screen.route) {
+                                                popUpTo(bottomNavController.graph.findStartDestination().id) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        },
+                                        colors = NavigationBarItemDefaults.colors(
+
+                                            // 1. EFEKT AKTYWNEJ STRONY ("Pigułka" w tle ikony)
+                                            // Używam tu zielonego koloru z 20% przezroczystości (alpha = 0.2f) dla fajnego efektu
+                                            indicatorColor = Color(0xFF20CE55).copy(alpha = 0.0f),
+                                            // Jeśli chcesz to CAŁKOWICIE UKRYĆ, użyj: Color.Transparent
+
+                                            // 2. KOLORY IKON
+                                            selectedIconColor = Color(0xFF20CE55), // Ikona aktualnej strony
+                                            unselectedIconColor = DarkNavIcon, // Ikony pozostałych stron
+
+                                            // 3. KOLORY TEKSTÓW (jeśli etykiety są widoczne)
+                                            selectedTextColor = Color(0xFF20CE55),
+                                            unselectedTextColor = DarkNavIcon
+                                        )
+                                    )
+                                }
+
+                            }
+
                         }
 
-                    }
 
+                    }
+                }
+
+            }
+        ) { innerPadding ->
+            NavHost(
+                navController = bottomNavController,
+                startDestination = Screen.Dashboard.route,
+                modifier = Modifier.padding(innerPadding)
+                    .background(DarkBackground)
+                    .fillMaxSize()
+            ) {
+                composable(Screen.Favorites.route) { FavoritesScreen(
+                    navController = bottomNavController,
+                    onLogout = onLogoutClick
+                ) }
+                composable(Screen.Dashboard.route) { DashboardScreen(
+                    navController = rootNavController
+                ) }
+                composable(Screen.Map.route) { MapScreen(
+//                navController = bottomNavController
+                    navController = rootNavController
+                ) }
+
+                composable(Screen.Search.route) {
+                    LiveSearchScreen(
+                        navController = rootNavController, // Główny kontroler, żeby otworzyć pełne szczegóły
+                        searchQuery = searchQuery
+                    )
                 }
 
 
+
             }
-        }
-    ) { innerPadding ->
-        NavHost(
-            navController = bottomNavController,
-            startDestination = Screen.Dashboard.route,
-            modifier = Modifier.padding(innerPadding)
-                .background(DarkBackground)
-                .fillMaxHeight()
-        ) {
-            composable(Screen.Favorites.route) { FavoritesScreen(
-                navController = bottomNavController,
-                onLogout = onLogoutClick
-            ) }
-            composable(Screen.Dashboard.route) { DashboardScreen(
-                navController = rootNavController
-            ) }
-            composable(Screen.Map.route) { MapScreen(
-//                navController = bottomNavController
-                navController = rootNavController
-            ) }
-        }
+        } // Scaffold
+
     }
+
+
 }
 
 
