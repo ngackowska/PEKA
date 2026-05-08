@@ -40,22 +40,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.example.peka.screens.BollardsScreen
-import com.example.peka.screens.DashboardScreen
-import com.example.peka.screens.MapScreen
-import com.example.peka.screens.FavoritesScreen
 import com.example.peka.screens.LiveSearchScreen
+import com.example.peka.ui.theme.DarkText
+import com.example.peka.ui.theme.HalfTransparentDarkBackground
+import com.example.peka.ui.theme.TransparentDarkBackground
+import com.example.peka.ui.theme.neumorphicShadow
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -149,55 +141,107 @@ fun MainNavigationContainer(
 
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = { newValue ->
-                                searchQuery = newValue
+                val customBrush = Brush.verticalGradient(
+                    colorStops = arrayOf(
+                        0.0f to HalfTransparentDarkBackground,   // Zaczynamy czerwonym na samej górze
+                        0.8f to HalfTransparentDarkBackground,   // Trzymamy solidny czerwony aż do równej połowy (50%)
+                        1.0f to TransparentDarkBackground   // Od połowy w dół płynnie przechodzimy w niebieski
+                    )
+                )
+                Row(
 
-                                // LOGIKA NAWIGACJI PRZY PISANIU:
-                                if (newValue.isNotEmpty() && currentRoute != Screen.Search.route) {
-                                    // Jeśli użytkownik zaczął pisać, idziemy do Search
-                                    bottomNavController.navigate(Screen.Search.route) { launchSingleTop = true }
-                                } else if (newValue.isEmpty() && currentRoute == Screen.Search.route) {
-                                    // Jeśli skasował cały tekst, wracamy do poprzedniego ekranu
-                                    bottomNavController.popBackStack()
-                                }
-                            },
-                            placeholder = { Text("Szukaj przystanku...") },
-                            singleLine = true,
-                            leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Szukaj") },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(end = 16.dp)
-                                .height(50.dp),
-                            shape = RoundedCornerShape(25.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            )
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { coroutineScope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Otwórz menu")
+                    modifier = Modifier
+                        .background(brush = customBrush)
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .padding(0.dp, top = 5.dp, bottom = 15.dp, end = 0.dp)
+                        .height(85.dp)
+                        .fillMaxWidth(),
+
+
+
+                ){
+                    Card(
+                        modifier = Modifier
+                            .padding(start = 17.dp, end = 10.dp, top = 17.dp, bottom = 17.dp)
+                            .fillMaxHeight()
+                            .aspectRatio(1.0f)
+                            .neumorphicShadow(
+                                cornerRadius = 20.dp,
+                                shadowRadius = 10.dp
+                            ),
+
+                        colors = CardColors(
+                            containerColor = DarkCardBackground,
+                            contentColor = DarkText,
+                            disabledContainerColor = DarkCardBackground,
+                            disabledContentColor = DarkCardBackground
+                        ),
+                        shape = RoundedCornerShape(50.dp)
+                    ){
+                        IconButton(
+                            modifier = Modifier.padding(10.dp),
+                            onClick = { coroutineScope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Otwórz menu", tint = DarkText)
                         }
                     }
-                )
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { newValue ->
+                            searchQuery = newValue
+
+                            // LOGIKA NAWIGACJI PRZY PISANIU:
+                            if (newValue.isNotEmpty() && currentRoute != Screen.Search.route) {
+                                // Jeśli użytkownik zaczął pisać, idziemy do Search
+                                bottomNavController.navigate(Screen.Search.route) { launchSingleTop = true }
+                            } else if (newValue.isEmpty() && currentRoute == Screen.Search.route) {
+                                // Jeśli skasował cały tekst, wracamy do poprzedniego ekranu
+                                bottomNavController.popBackStack()
+                            }
+                        },
+                        placeholder = { Text("Szukaj przystanku...", color = DarkText, fontSize = 14.sp, lineHeight = 10.sp) },
+                        singleLine = true,
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Szukaj", tint = DarkText) },
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .padding(top = 17.dp, bottom = 17.dp, start = 10.dp, end = 17.dp)
+                            .neumorphicShadow(
+                                cornerRadius = 20.dp,
+                                shadowRadius = 10.dp
+                            )
+                        ,
+                        shape = RoundedCornerShape(50.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            unfocusedContainerColor = DarkCardBackground,
+                            focusedContainerColor =  DarkCardBackground,
+                            unfocusedTextColor = DarkText,
+                            focusedTextColor = DarkText
+                        ),
+                        textStyle = LocalTextStyle.current.copy(
+                            fontSize = 14.sp, // Twój nowy, większy (lub mniejszy) rozmiar tekstu
+                            lineHeight = 10.sp
+                        )
+                    )
+
+                }
+
+
+
+
+
+
             },
             floatingActionButtonPosition = FabPosition.Center,
             modifier = Modifier,
             floatingActionButton = {
-
                 if (currentRoute != Screen.Search.route) {
                     BoxWithConstraints(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 10.dp)
-
-
+                            .padding(bottom = 15.dp)
                     ){
                         Card(modifier = Modifier
                             .width((maxWidth.value * 0.75).dp),
@@ -269,16 +313,19 @@ fun MainNavigationContainer(
             NavHost(
                 navController = bottomNavController,
                 startDestination = Screen.Dashboard.route,
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier
+//                    .padding(innerPadding)
                     .background(DarkBackground)
                     .fillMaxSize()
             ) {
                 composable(Screen.Favorites.route) { FavoritesScreen(
                     navController = bottomNavController,
-                    onLogout = onLogoutClick
+                    onLogout = onLogoutClick,
+                    modifier = Modifier.padding(innerPadding)
                 ) }
                 composable(Screen.Dashboard.route) { DashboardScreen(
-                    navController = rootNavController
+                    navController = rootNavController,
+                    modifier = Modifier.padding(innerPadding)
                 ) }
                 composable(Screen.Map.route) { MapScreen(
 //                navController = bottomNavController
@@ -288,7 +335,8 @@ fun MainNavigationContainer(
                 composable(Screen.Search.route) {
                     LiveSearchScreen(
                         navController = rootNavController, // Główny kontroler, żeby otworzyć pełne szczegóły
-                        searchQuery = searchQuery
+                        searchQuery = searchQuery,
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
 

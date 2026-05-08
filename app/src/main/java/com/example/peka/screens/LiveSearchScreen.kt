@@ -29,7 +29,8 @@ import com.example.peka.viewmodels.StopsViewModel
 fun LiveSearchScreen(
     navController: NavController,
     searchQuery: String,
-    viewModel: StopsViewModel = viewModel() // Korzystamy z Twojego cache'a przystanków!
+    viewModel: StopsViewModel = viewModel(), // Korzystamy z Twojego cache'a przystanków!,
+    modifier: Modifier,
 ) {
     val allStops by viewModel.allStops.collectAsState()
 
@@ -45,7 +46,7 @@ fun LiveSearchScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {

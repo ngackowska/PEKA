@@ -25,7 +25,8 @@ import kotlinx.coroutines.isActive
 fun DashboardScreen(
     navController: NavController,
     dashboardViewModel: DashboardViewModel = viewModel(),
-    stopsViewModel: StopsViewModel = viewModel()
+    stopsViewModel: StopsViewModel = viewModel(),
+    modifier: Modifier
 ) {
 
 //    val allStops by viewModel.allStops.collectAsState()
@@ -87,7 +88,7 @@ fun DashboardScreen(
         }
     }
 
-    LazyColumn(modifier = Modifier.padding(20.dp)) {
+    LazyColumn(modifier = modifier.padding(20.dp, 10.dp)) {
         if (nearest.isNotEmpty()) {
             item {
                 Text(

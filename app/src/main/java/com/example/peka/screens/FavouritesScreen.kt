@@ -14,11 +14,12 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun FavoritesScreen(
     navController: NavController,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    modifier: Modifier
 ) {
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -11,6 +11,8 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val DarkBackground = Color(0xFF252525)
+val TransparentDarkBackground = Color(0x00252525)
+val HalfTransparentDarkBackground = Color(0xD9252525)
 val DarkCardBackground = Color(0xFF2F2F2F)
 val HalfTransparentDarkCardBackground = Color(0xBF2F2F2F)
 val TransparentDarkCardBackground = Color(0x002F2F2F)
