@@ -37,7 +37,8 @@ import com.example.peka.ui.theme.neumorphicShadow
 fun StopMonitorCard(
     stop: BusStop,
     departures: List<TimeData>,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isOnMapScreen: Boolean
 ) {
     Card(
         modifier = Modifier
@@ -81,27 +82,31 @@ fun StopMonitorCard(
                     modifier = Modifier
                         .fillMaxHeight()
                         .fillMaxWidth()
-                        .background(Color.LightGray),
+                        .background(DarkCardBackground),
                     contentAlignment = Alignment.Center
                 ) {
-                    val currentWidthDp = maxWidth.value
-                    val currentHeightDp = maxHeight.value
+                    if (!isOnMapScreen){
+                        val currentWidthDp = maxWidth.value
+                        val currentHeightDp = maxHeight.value
 
-                    val mapImageUrl = getStaticMapUrl(
-                        lat = stop.stop_lat,
-                        lon = stop.stop_lon,
-                        width = currentWidthDp,
-                        height = currentHeightDp
-                    )
+                        val mapImageUrl = getStaticMapUrl(
+                            lat = stop.stop_lat,
+                            lon = stop.stop_lon,
+                            width = currentWidthDp,
+                            height = currentHeightDp
+                        )
 
-                    AsyncImage(
-                        model = mapImageUrl,
-                        contentDescription = "Mapa dla przystanku ${stop.stop_name}",
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        alignment = Alignment.CenterEnd,
-                        contentScale = ContentScale.Crop
-                    )
+                        AsyncImage(
+                            model = mapImageUrl,
+                            contentDescription = "Mapa dla przystanku ${stop.stop_name}",
+                            modifier = Modifier
+                                .fillMaxHeight(),
+                            alignment = Alignment.CenterEnd,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+
+
                 }
             }
 

@@ -55,9 +55,9 @@ import kotlinx.coroutines.launch
 
 
 sealed class Screen(val route: String, val label: String, val icon: @Composable () -> Unit) {
-    object Favorites : Screen("favorites", "Ulubione", { Icon(Icons.Filled.Favorite, contentDescription = null, modifier = Modifier.size(32.dp)) })
-    object Dashboard : Screen("dashboard", "Dashboard", { Icon(Icons.Filled.Home, contentDescription = null, modifier = Modifier.size(32.dp)) })
-    object Map : Screen("map", "Mapa", { Icon(Icons.Filled.Place, contentDescription = null, modifier = Modifier.size(32.dp)) })
+    object Favorites : Screen("favorites", "Ulubione", { Icon(Icons.Filled.Favorite, contentDescription = null, modifier = Modifier.size(34.dp)) })
+    object Dashboard : Screen("dashboard", "Dashboard", { Icon(Icons.Filled.Home, contentDescription = null, modifier = Modifier.size(34.dp)) })
+    object Map : Screen("map", "Mapa", { Icon(Icons.Filled.Place, contentDescription = null, modifier = Modifier.size(34.dp)) })
     object Search : Screen("search", "Szukaj", { Icon(Icons.Filled.Search, contentDescription = null) })
 }
 
@@ -241,7 +241,7 @@ fun MainNavigationContainer(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(bottom = 15.dp)
+                            .padding(bottom = 5.dp)
                     ){
                         Card(modifier = Modifier
                             .width((maxWidth.value * 0.75).dp),
@@ -269,9 +269,9 @@ fun MainNavigationContainer(
 
                                 items.forEach { screen ->
                                     NavigationBarItem(
-                                        modifier = Modifier,
+                                        modifier = Modifier.offset(y=5.dp),
                                         icon = screen.icon,
-                                        label = { Text(screen.label) },
+                                        label = { Text(screen.label, modifier = Modifier.offset(y = (-8).dp), fontSize = 10.sp) },
                                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                         onClick = {
                                             bottomNavController.navigate(screen.route) {

@@ -115,7 +115,8 @@ fun DashboardScreen(
                     departures = stopDepartures,
                     onClick = {
                         navController.navigate("stop_details/${stop.stop_code}")
-                    }
+                    },
+                    isOnMapScreen = false
                 )
             }
         }
