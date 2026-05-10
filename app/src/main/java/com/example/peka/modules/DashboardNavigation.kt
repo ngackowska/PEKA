@@ -268,36 +268,44 @@ fun MainNavigationContainer(
                                 val currentDestination = navBackStackEntry?.destination
 
                                 items.forEach { screen ->
-                                    NavigationBarItem(
-                                        modifier = Modifier.offset(y=5.dp),
-                                        icon = screen.icon,
-                                        label = { Text(screen.label, modifier = Modifier.offset(y = (-8).dp), fontSize = 10.sp) },
-                                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                                        onClick = {
-                                            bottomNavController.navigate(screen.route) {
-                                                popUpTo(bottomNavController.graph.findStartDestination().id) {
-                                                    saveState = true
+                                    CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                                        NavigationBarItem(
+                                            modifier = Modifier.offset(y = 5.dp),
+                                            icon = screen.icon,
+                                            label = {
+                                                Text(
+                                                    screen.label,
+                                                    modifier = Modifier.offset(y = (-8).dp),
+                                                    fontSize = 10.sp
+                                                )
+                                            },
+                                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                            onClick = {
+                                                bottomNavController.navigate(screen.route) {
+                                                    popUpTo(bottomNavController.graph.findStartDestination().id) {
+                                                        saveState = true
+                                                    }
+                                                    launchSingleTop = true
+                                                    restoreState = true
                                                 }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
-                                        },
-                                        colors = NavigationBarItemDefaults.colors(
+                                            },
+                                            colors = NavigationBarItemDefaults.colors(
 
-                                            // 1. EFEKT AKTYWNEJ STRONY ("Pigułka" w tle ikony)
-                                            // Używam tu zielonego koloru z 20% przezroczystości (alpha = 0.2f) dla fajnego efektu
-                                            indicatorColor = Color(0xFF20CE55).copy(alpha = 0.0f),
-                                            // Jeśli chcesz to CAŁKOWICIE UKRYĆ, użyj: Color.Transparent
+                                                // 1. EFEKT AKTYWNEJ STRONY ("Pigułka" w tle ikony)
+                                                // Używam tu zielonego koloru z 20% przezroczystości (alpha = 0.2f) dla fajnego efektu
+                                                indicatorColor = Color(0xFF20CE55).copy(alpha = 0.0f),
+                                                // Jeśli chcesz to CAŁKOWICIE UKRYĆ, użyj: Color.Transparent
 
-                                            // 2. KOLORY IKON
-                                            selectedIconColor = Color(0xFF20CE55), // Ikona aktualnej strony
-                                            unselectedIconColor = DarkNavIcon, // Ikony pozostałych stron
+                                                // 2. KOLORY IKON
+                                                selectedIconColor = Color(0xFF20CE55), // Ikona aktualnej strony
+                                                unselectedIconColor = DarkNavIcon, // Ikony pozostałych stron
 
-                                            // 3. KOLORY TEKSTÓW (jeśli etykiety są widoczne)
-                                            selectedTextColor = Color(0xFF20CE55),
-                                            unselectedTextColor = DarkNavIcon
+                                                // 3. KOLORY TEKSTÓW (jeśli etykiety są widoczne)
+                                                selectedTextColor = Color(0xFF20CE55),
+                                                unselectedTextColor = DarkNavIcon
+                                            )
                                         )
-                                    )
+                                    }
                                 }
 
                             }
