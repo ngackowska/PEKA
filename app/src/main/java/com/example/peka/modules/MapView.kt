@@ -8,16 +8,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.DrawableCompat
 import com.example.peka.BuildConfig
 import com.example.peka.R
 import com.example.peka.database.BusStop
-import com.example.peka.ui.theme.DarkAccent
-import com.example.peka.ui.theme.DarkSelectedAccent
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -153,17 +149,17 @@ fun updateVisibleMarkers(mapView: MapView, allStops: List<BusStop>, onMarkerClic
     }
 
     visibleStops.forEach { stop ->
-        val iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.location_on)?.mutate()
+        var iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.location_on)?.mutate()
 
         val isSelected = (selectedStop != null && selectedStop.stop_code == stop.stop_code)
 
         if (iconDrawable != null) {
             if (isSelected) {
                 // Jeśli to ten kliknięty -> nadaj kolor wybrany
-                DrawableCompat.setTint(iconDrawable, DarkSelectedAccent.toArgb())
+                iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.location_on_clicked)?.mutate()
             } else {
                 // W przeciwnym razie -> nadaj zwykły kolor
-                DrawableCompat.setTint(iconDrawable, DarkAccent.toArgb())
+                iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.location_on)?.mutate()
             }
         }
 
