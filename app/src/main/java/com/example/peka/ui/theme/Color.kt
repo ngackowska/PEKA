@@ -19,6 +19,8 @@ val TransparentDarkCardBackground = Color(0x002F2F2F)
 val DarkText = Color(0xFFCACACA)
 val DarkHeaderText = Color(0xFFBEBEBE)
 val DarkAccent = Color(0xFF20CE55)
+val DarkSelectedAccent = Color(0xFF149C3D)
+
 val DarkNavIcon = Color(0xFF727272)
 val DarkTopShadow = Color(0x80858585)
 val DarkBottomShadow = Color(0x99000000)

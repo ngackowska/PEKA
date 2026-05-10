@@ -41,7 +41,7 @@ import androidx.compose.material3.*
 @Composable
 fun MapScreen(
     navController: NavController,
-    viewModel: StopsViewModel = viewModel()
+    viewModel: StopsViewModel = viewModel(),
 ) {
 
     val allStops by viewModel.allStops.collectAsState()
@@ -59,7 +59,8 @@ fun MapScreen(
             modifier = Modifier.fillMaxSize().padding(30.dp),
             onMarkerClick = { clickedStop ->
                 selectedStop = clickedStop
-            }
+            },
+            selectedStop = selectedStop
         )
 
 
