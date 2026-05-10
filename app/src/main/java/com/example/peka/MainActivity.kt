@@ -4,9 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.peka.ui.theme.PEKATheme
 import androidx.navigation.compose.NavHost
@@ -68,7 +70,7 @@ fun AppNavigation() {
         }
 
         composable(route = "map_screen") {
-            MapScreen(navController = navController)
+            MapScreen(navController = navController, modifier = Modifier.padding(bottom = 140.dp))
         }
 
         composable(route = "dashboard_screen") {

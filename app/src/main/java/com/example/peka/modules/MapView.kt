@@ -13,6 +13,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.example.peka.BuildConfig
 import com.example.peka.R
+import com.example.peka.api.TimeData
 import com.example.peka.database.BusStop
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
@@ -29,7 +30,7 @@ fun OSMMapView(
     stops: List<BusStop>,
     modifier: Modifier = Modifier,
     onMarkerClick: (BusStop) -> Unit,
-    selectedStop: BusStop?,
+    selectedStop: BusStop?
 ) {
     val context = LocalContext.current
 

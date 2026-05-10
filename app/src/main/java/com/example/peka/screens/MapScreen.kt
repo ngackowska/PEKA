@@ -36,20 +36,28 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
+import androidx.compose.runtime.LaunchedEffect
+import com.example.peka.modules.StopMonitorCard
+import com.example.peka.viewmodels.DashboardViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 
 @Composable
 fun MapScreen(
     navController: NavController,
     viewModel: StopsViewModel = viewModel(),
+    dashboardViewModel: DashboardViewModel = viewModel(),
+    modifier: Modifier
 ) {
 
     val allStops by viewModel.allStops.collectAsState()
 //    val stopsToShow = allStops.take(10)
 //    val stopsToShow = allStops.filter { it.stop_name == "Kórnicka" }
     var selectedStop by remember { mutableStateOf<BusStop?>(null) }
+    val departuresMap by dashboardViewModel.departuresMap.collectAsState()
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
 
 
 
@@ -73,53 +81,71 @@ fun MapScreen(
                 .padding(16.dp)
         ) {
             selectedStop?.let { stop ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = stop.stop_name,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
 
-                            IconButton(onClick = { selectedStop = null }) {
-                                Icon(Icons.Default.Close, contentDescription = "Zamknij")
-                            }
-                        }
-
-                        Text(
-                            text = "Kod słupka: ${stop.stop_code}",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Text(
-                            text = "Strefa: ${stop.zone_id}",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-
-                        Button(
-                            onClick = {
-                                navController.navigate("stop_details/${stop.stop_code}")
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Pokaż odjazdy")
-                        }
+                LaunchedEffect(stop.stop_code) {
+                    while (isActive) {
+                        dashboardViewModel.fetchDeparturesForStop(stop.stop_code)
+                        delay(20_000L)
                     }
                 }
+
+                val stopDepartures = departuresMap[stop.stop_code] ?: emptyList()
+
+//                Card(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+//                    shape = RoundedCornerShape(16.dp),
+//                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+//                ) {
+//                    Column(
+//                        modifier = Modifier.padding(16.dp)
+//                    ) {
+//                        Row(
+//                            modifier = Modifier.fillMaxWidth(),
+//                            horizontalArrangement = Arrangement.SpaceBetween,
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            Text(
+//                                text = stop.stop_name,
+//                                fontSize = 20.sp,
+//                                fontWeight = FontWeight.Bold
+//                            )
+//
+//                            IconButton(onClick = { selectedStop = null }) {
+//                                Icon(Icons.Default.Close, contentDescription = "Zamknij")
+//                            }
+//                        }
+//
+//                        Text(
+//                            text = "Kod słupka: ${stop.stop_code}",
+//                            color = MaterialTheme.colorScheme.onSurfaceVariant
+//                        )
+//                        Text(
+//                            text = "Strefa: ${stop.zone_id}",
+//                            color = MaterialTheme.colorScheme.onSurfaceVariant
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(16.dp))
+//
+//
+//                        Button(
+//                            onClick = {
+//                                navController.navigate("stop_details/${stop.stop_code}")
+//                            },
+//                            modifier = Modifier.fillMaxWidth()
+//                        ) {
+//                            Text("Pokaż odjazdy")
+//                        }
+//                    }
+//                }
+                StopMonitorCard(
+                    stop = stop,
+                    departures = stopDepartures,
+                    onClick = {
+                        navController.navigate("stop_details/${stop.stop_code}")
+                    },
+                    isOnMapScreen = true
+                )
             }
         }
 

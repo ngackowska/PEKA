@@ -337,7 +337,8 @@ fun MainNavigationContainer(
                 ) }
                 composable(Screen.Map.route) { MapScreen(
 //                navController = bottomNavController
-                    navController = rootNavController
+                    navController = rootNavController,
+                    modifier = Modifier.padding(bottom = 140.dp) // 2. ZMIANA: Ręcznie odpychamy treść od dołu o wysokość paska
                 ) }
 
                 composable(Screen.Search.route) {
