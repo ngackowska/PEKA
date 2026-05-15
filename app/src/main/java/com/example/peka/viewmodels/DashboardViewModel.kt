@@ -2,6 +2,7 @@ package com.example.peka.viewmodels
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.viewModelScope
 import com.example.peka.api.TimeData
 import com.example.peka.api.pekaApiService
@@ -10,10 +11,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import android.location.Location
+import android.location.LocationManager
 import android.os.Looper
+import android.location.LocationListener
+import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.*
+import androidx.lifecycle.viewModelScope
+import com.example.peka.api.pekaApiService
+import kotlinx.coroutines.launch
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -33,32 +38,49 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     private val _userLocation = MutableStateFlow<android.location.Location?>(null)
     val userLocation: StateFlow<android.location.Location?> = _userLocation
-    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application)
+//    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(application)
 
-    // ###################################################
-    // TEŻ NA PÓŹNIEJ DO LOKALIZACJI
-    // ###################################################
+
+    private val locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
     @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
-        // Sprawdza pozycję użytkownika co 10s, aktualizuje jeżeli przemieści się o co najmniej 30 metrów
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000L)
-            .setMinUpdateDistanceMeters(30f)
-            .build()
+        try {
+            // 1. SZYBKI START: Próbujemy pobrać ostatnią znaną lokalizację od razu
+            val lastKnownGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            val lastKnownNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-        val locationCallback = object : LocationCallback() {
-            override fun onLocationResult(result: LocationResult) {
-                result.lastLocation?.let { location ->
+            // Wybieramy tę, która jest dostępna (GPS jest dokładniejszy, Network jest szybszy)
+            val bestLastKnown = lastKnownGps ?: lastKnownNetwork
+            if (bestLastKnown != null) {
+                _userLocation.value = bestLastKnown
+            }
+
+            // 2. NASŁUCHIWANIE NA ŻYWO: Aktualizuj, jeśli użytkownik przemieści się o 30 metrów
+            val locationListener = object : LocationListener {
+                override fun onLocationChanged(location: Location) {
                     _userLocation.value = location
                 }
+                // Wymagane przez starsze wersje Androida
+                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
             }
-        }
 
-        fusedLocationClient.requestLocationUpdates(
-            locationRequest,
-            locationCallback,
-            Looper.getMainLooper()
-        )
+            // Rejestrujemy nasłuchiwacz (używamy GPS_PROVIDER dla dokładności)
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER,
+                10000L, // Sprawdzaj co 10 sekund
+                30f,    // Zmiana o minimum 30 metrów
+                locationListener
+            )
+
+        } catch (e: SecurityException) {
+            e.printStackTrace() // Brak uprawnień (choć zablokowaliśmy to już w widoku)
+        } catch (e: Exception) {
+            e.printStackTrace() // Inne błędy, np. wyłączony całkowicie GPS w telefonie
+        }
     }
+
+
 
     fun fetchDeparturesForStop(stopCode: String) {
         viewModelScope.launch {

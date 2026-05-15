@@ -46,54 +46,37 @@ fun DashboardScreen(
     modifier: Modifier
 ) {
 
-//    val allStops by viewModel.allStops.collectAsState()
-////    val stopsToShow = allStops.take(10)
-//    val stopsToShow = allStops.filter { it.stop_name == "Kórnicka" }
-//    val departuresList by viewModelDepartures.departures.collectAsState()
-
     val context = LocalContext.current
 
     val allStops by stopsViewModel.allStops.collectAsState()
     val nearest by dashboardViewModel.nearestStops.collectAsState()
     val departuresMap by dashboardViewModel.departuresMap.collectAsState()
-
-    // ##################################################
-    // lokalizacja użytkownika - do sprawdzenia w poznaniu
-
     val userLocation by dashboardViewModel.userLocation.collectAsState()
 
-    // Rejestrator zapytania o uprawnienia
+    // Rejestrator uprawnień
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
-        // Sprawdzamy, czy użytkownik dał nam chociaż jedno z uprawnień (dokładne LUB przybliżone)
         val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
         val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
 
-        Log.d("VIMO_TEST", "Odpowiedź systemu: Fine=$fineGranted, Coarse=$coarseGranted")
-
         if (fineGranted || coarseGranted) {
             dashboardViewModel.startLocationUpdates()
-        } else {
-            Log.e("VIMO_TEST", "Użytkownik (lub system) odrzucił uprawnienia!")
         }
     }
 
-    // Pytamy o uprawnienia tylko raz przy starcie ekranu
+    // SPRAWDZENIE UPRAWNIEŃ PRZY STARCIE
     LaunchedEffect(Unit) {
-        Log.d("VIMO_TEST", "Ekran załadowany, sprawdzam uprawnienia...")
-        kotlinx.coroutines.delay(500) // Pół sekundy przerwy dla stabilności systemu
-
-        val hasFineLocation = ContextCompat.checkSelfPermission(
+        val hasPermission = ContextCompat.checkSelfPermission(
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
 
-        if (hasFineLocation) {
-            Log.d("VIMO_TEST", "Aplikacja ma już uprawnienia! Uruchamiam lokalizację.")
+        if (hasPermission) {
+            // Jeśli już daliśmy zgodę w ustawieniach, od razu włączamy GPS
             dashboardViewModel.startLocationUpdates()
         } else {
-            Log.d("VIMO_TEST", "Brak uprawnień. Wywołuję okienko systemowe.")
+            // W przeciwnym razie prosimy o okienko
             permissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -103,7 +86,7 @@ fun DashboardScreen(
         }
     }
 
-
+    // 3. WYLICZANIE NAJBLIŻSZYCH PRZYSTANKÓW
     LaunchedEffect(allStops, userLocation) {
         if (allStops.isNotEmpty() && userLocation != null) {
             dashboardViewModel.calculateNearestStops(
@@ -114,73 +97,42 @@ fun DashboardScreen(
         }
     }
 
-    // ########################################################
+    LazyColumn(modifier = modifier.padding(20.dp, 10.dp)) {
 
-    // Aktualnie - sztywna lokalizacja użytkownika (Posnania)
+        if (nearest.isNotEmpty()) {
 
-//    val userLat = 52.39837217947031
-//    val userLon = 16.954065647695536
-
-    // Lepiej przy zmianie lokalizacji użytkownika???
-    // ALBO NIE WIEM
-
-    // Reagujemy na zmianę listy wszystkich przystanków
-//    LaunchedEffect(allStops) {
-//        if (allStops.isNotEmpty()) {
-//            dashboardViewModel.calculateNearestStops(userLat, userLon, allStops)
-//        }
-//    }
-
-    if (userLocation == null || allStops.isEmpty()) {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                CircularProgressIndicator()
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Diagnostyka na ekranie:
-                if (userLocation == null) {
-                    Text("Czekam na sygnał GPS / Uprawnienia...", color = Color.White)
-                }
-                if (allStops.isEmpty()) {
-                    Text("Czekam na dane z bazy (Stops)...", color = Color.White)
-                }
+            item {
+                Text(
+                    text = "Najbliższe przystanki",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(vertical = 0.dp, horizontal = 20.dp),
+                    color = DarkHeaderText
+                )
             }
-        }
-    } else {
-        LazyColumn(modifier = modifier.padding(20.dp, 10.dp)) {
-            if (nearest.isNotEmpty()) {
-                item {
-                    Text(
-                        text = "Najbliższe przystanki",
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(vertical = 0.dp, horizontal = 20.dp),
-                        color = DarkHeaderText
-                    )
-                }
-                items(nearest) { stop ->
-                    // Pobranie czasów odjazdów co 20s
-                    LaunchedEffect(stop.stop_code) {
-                        while (isActive) {
-                            dashboardViewModel.fetchDeparturesForStop(stop.stop_code)
-                            delay(20_000L)
-                        }
+            items(nearest) { stop ->
+                // Pobranie czasów odjazdów co 20s
+                LaunchedEffect(stop.stop_code) {
+                    while (isActive) {
+                        dashboardViewModel.fetchDeparturesForStop(stop.stop_code)
+                        delay(20_000L)
                     }
-
-                    val stopDepartures = departuresMap[stop.stop_code] ?: emptyList()
-
-                    StopMonitorCard(
-                        stop = stop,
-                        departures = stopDepartures,
-                        onClick = {
-                            navController.navigate("stop_details/${stop.stop_code}")
-                        },
-                        isOnMapScreen = false
-                    )
                 }
+
+                val stopDepartures = departuresMap[stop.stop_code] ?: emptyList()
+
+                StopMonitorCard(
+                    stop = stop,
+                    departures = stopDepartures,
+                    onClick = {
+                        navController.navigate("stop_details/${stop.stop_code}")
+                    },
+                    isOnMapScreen = false
+                )
+            }
+        } else {
+            item {
+                CircularProgressIndicator(color = Color(0xFF20CE55))
             }
         }
     }
