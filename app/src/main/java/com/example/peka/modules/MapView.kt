@@ -82,9 +82,20 @@ fun OSMMapView(
     AndroidView(
         modifier = modifier,
         factory = { ctx ->
-            Configuration.getInstance().cacheMapTileCount = 12
-            Configuration.getInstance().cacheMapTileOvershoot = 12
 
+            val config = Configuration.getInstance()
+
+            // 1. Zwiększamy cache w pamięci RAM (bardzo szybkie przesuwanie po już odwiedzonych miejscach)
+            config.cacheMapTileCount = 100 // Zwiększamy z 12 do 100 kafelków w RAM
+            config.cacheMapTileOvershoot = 100
+
+            // 2. Zwiększamy liczbę wątków sieciowych (pobieranie wielu kafelków naraz)
+            config.tileDownloadThreads = 4 // Szybsze ładowanie przy dobrym LTE/WiFi
+            config.tileFileSystemThreads = 4 // Szybszy zapis na dysk telefonu
+
+            // 3. Powiększamy cache na dysku (telefon zapamięta Poznań nawet po wyłączeniu aplikacji)
+            config.tileFileSystemCacheMaxBytes = 250L * 1024 * 1024 // Maksymalnie 250 MB na dysku
+            config.tileFileSystemCacheTrimBytes = 200L * 1024 * 1024 // Kiedy przekroczy 250MB, usuń najstarsze do poziomu 200MB
 
 
             MapView(ctx).apply {
@@ -95,10 +106,10 @@ fun OSMMapView(
                 val mapTilerDark = XYTileSource(
                     "MapTilerStreetsDark",
                     0, // Minimalny zoom
-                    20, // Maksymalny zoom
+                    19, // Zmniejszamy max zoom do 19, aby zapobiec cyfrowemu rozciąganiu kafelków przez bibliotekę
                     256, // Rozmiar kafelka (MapTiler obsługuje też 512 dla ekranów Retina)
                     // TRIK: Zamiast samego ".png", dodajemy parametry autoryzacji!
-                    ".png?key=$mapTilerKey",
+                    "@2x.png?key=$mapTilerKey", // KLUCZOWE: Używamy trybu Retina (High-DPI) dla ostrości brzytwy
                     arrayOf(
                         "https://api.maptiler.com/maps/streets-v4-dark/256/"
                     )

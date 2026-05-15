@@ -12,13 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import android.location.Location
 import android.location.LocationManager
-import android.os.Looper
 import android.location.LocationListener
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.viewModelScope
-import com.example.peka.api.pekaApiService
-import kotlinx.coroutines.launch
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -45,39 +41,47 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     @SuppressLint("MissingPermission")
     fun startLocationUpdates() {
-        try {
-            // 1. SZYBKI START: Próbujemy pobrać ostatnią znaną lokalizację od razu
-            val lastKnownGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            val lastKnownNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+//        try {
+//            // 1. SZYBKI START: Próbujemy pobrać ostatnią znaną lokalizację od razu
+//            val lastKnownGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+//            val lastKnownNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+//
+//            // Wybieramy tę, która jest dostępna (GPS jest dokładniejszy, Network jest szybszy)
+//            val bestLastKnown = lastKnownGps ?: lastKnownNetwork
+//            if (bestLastKnown != null) {
+//                _userLocation.value = bestLastKnown
+//            }
+//
+//            // 2. NASŁUCHIWANIE NA ŻYWO: Aktualizuj, jeśli użytkownik przemieści się o 30 metrów
+//            val locationListener = object : LocationListener {
+//                override fun onLocationChanged(location: Location) {
+//                    _userLocation.value = location
+//                }
+//                // Wymagane przez starsze wersje Androida
+//                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+//            }
+//
+//            // Rejestrujemy nasłuchiwacz (używamy GPS_PROVIDER dla dokładności)
+//            locationManager.requestLocationUpdates(
+//                LocationManager.GPS_PROVIDER,
+//                10000L, // Sprawdzaj co 10 sekund
+//                30f,    // Zmiana o minimum 30 metrów
+//                locationListener
+//            )
+//
+//        } catch (e: SecurityException) {
+//            e.printStackTrace() // Brak uprawnień (choć zablokowaliśmy to już w widoku)
+//        } catch (e: Exception) {
+//            e.printStackTrace() // Inne błędy, np. wyłączony całkowicie GPS w telefonie
+//        }
 
-            // Wybieramy tę, która jest dostępna (GPS jest dokładniejszy, Network jest szybszy)
-            val bestLastKnown = lastKnownGps ?: lastKnownNetwork
-            if (bestLastKnown != null) {
-                _userLocation.value = bestLastKnown
-            }
-
-            // 2. NASŁUCHIWANIE NA ŻYWO: Aktualizuj, jeśli użytkownik przemieści się o 30 metrów
-            val locationListener = object : LocationListener {
-                override fun onLocationChanged(location: Location) {
-                    _userLocation.value = location
-                }
-                // Wymagane przez starsze wersje Androida
-                override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-            }
-
-            // Rejestrujemy nasłuchiwacz (używamy GPS_PROVIDER dla dokładności)
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                10000L, // Sprawdzaj co 10 sekund
-                30f,    // Zmiana o minimum 30 metrów
-                locationListener
-            )
-
-        } catch (e: SecurityException) {
-            e.printStackTrace() // Brak uprawnień (choć zablokowaliśmy to już w widoku)
-        } catch (e: Exception) {
-            e.printStackTrace() // Inne błędy, np. wyłączony całkowicie GPS w telefonie
+        val mockLocation = android.location.Location(android.location.LocationManager.GPS_PROVIDER).apply {
+            latitude = 52.4037  // Tutaj wpisz docelową szerokość geograficzną
+            longitude = 16.9541 // Tutaj wpisz docelową długość geograficzną
         }
+
+        _userLocation.value = mockLocation
+
     }
 
 

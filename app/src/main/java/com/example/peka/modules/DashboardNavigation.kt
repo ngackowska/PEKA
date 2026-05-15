@@ -235,6 +235,7 @@ fun MainNavigationContainer(
             },
             floatingActionButtonPosition = FabPosition.Center,
             modifier = Modifier,
+//            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             floatingActionButton = {
                 if (currentRoute != Screen.Search.route) {
                     BoxWithConstraints(
@@ -338,7 +339,7 @@ fun MainNavigationContainer(
                 composable(Screen.Map.route) { MapScreen(
 //                navController = bottomNavController
                     navController = rootNavController,
-                    modifier = Modifier.padding(bottom = 140.dp) // 2. ZMIANA: Ręcznie odpychamy treść od dołu o wysokość paska
+//                    modifier = Modifier.padding(bottom = 140.dp) // 2. ZMIANA: Ręcznie odpychamy treść od dołu o wysokość paska
                 ) }
 
                 composable(Screen.Search.route) {

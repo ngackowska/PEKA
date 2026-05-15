@@ -64,7 +64,7 @@ fun MapScreen(
         OSMMapView(
             stops = allStops,
 //                stops = stopsToShow,
-            modifier = Modifier.fillMaxSize().padding(30.dp),
+            modifier = Modifier.fillMaxSize(),
             onMarkerClick = { clickedStop ->
                 selectedStop = clickedStop
             },
