@@ -2,6 +2,7 @@ package com.example.peka.modules
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,10 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.peka.BuildConfig
 import com.example.peka.R
 import com.example.peka.api.TimeData
 import com.example.peka.database.BusStop
+import com.example.peka.viewmodels.DashboardViewModel
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
@@ -30,7 +33,8 @@ fun OSMMapView(
     stops: List<BusStop>,
     modifier: Modifier = Modifier,
     onMarkerClick: (BusStop) -> Unit,
-    selectedStop: BusStop?
+    selectedStop: BusStop?,
+    dashboardViewModel: DashboardViewModel = viewModel(),
 ) {
     val context = LocalContext.current
 
@@ -41,6 +45,10 @@ fun OSMMapView(
 
     val currentSelectedStop by rememberUpdatedState(selectedStop)
 
+    val userLocation by dashboardViewModel.userLocation.collectAsState()
+    val currentUserLocation by rememberUpdatedState(userLocation) // Najświeższa lokalizacja dla Listenerów mapy
+
+    var isMapCenteredOnUser by remember { mutableStateOf(false) }
 
     // 2. MAGIA: Kiedy 'selectedStop' się zmieni, odpal ten kod!
     LaunchedEffect(selectedStop) {
@@ -56,6 +64,18 @@ fun OSMMapView(
             if (map.zoomLevelDouble < 15.0) {
                 mapController.zoomTo(15.0)
             }
+        }
+    }
+
+    // 2. NAPRAWIONE CENTROWANIE: Reaguje zarówno na lokalizację, jak i na gotowość mapy
+    LaunchedEffect(userLocation, mapReference) {
+        val map = mapReference
+        val location = userLocation
+        if (location != null && map != null && !isMapCenteredOnUser) {
+            val position = GeoPoint(location.latitude, location.longitude)
+            map.controller.setCenter(position)
+            map.controller.setZoom(16.0)
+            isMapCenteredOnUser = true
         }
     }
 
@@ -98,25 +118,17 @@ fun OSMMapView(
                 controller.setZoom(15.0)
 
 
-
-//                setTilesScaledToDpi(true)
-
-
-                // ###################
-                // TU MOZNA DAC LOKALIZACJE UZYCK
-                // ######################
-
-                val poznanCenter = GeoPoint(52.4064, 16.9252)
-                controller.setCenter(poznanCenter)
+                val defaultCenter = GeoPoint(52.4064, 16.9252)
+                controller.setCenter(defaultCenter)
 
                 addMapListener(object : MapListener {
                     override fun onScroll(event: ScrollEvent?): Boolean {
-                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentSelectedStop)
+                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentSelectedStop, currentUserLocation)
                         return true
                     }
 
                     override fun onZoom(event: ZoomEvent?): Boolean {
-                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentSelectedStop)
+                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentSelectedStop, currentUserLocation)
                         return true
                     }
                 })
@@ -124,15 +136,34 @@ fun OSMMapView(
             }
         },
         update = { mapView ->
-            updateVisibleMarkers(mapView, currentStops, onMarkerClick, currentSelectedStop)
+            updateVisibleMarkers(mapView, currentStops, onMarkerClick, currentSelectedStop, currentUserLocation)
 
         }
     )
 }
 
 
-fun updateVisibleMarkers(mapView: MapView, allStops: List<BusStop>, onMarkerClick: (BusStop) -> Unit, selectedStop: BusStop?) {
+fun updateVisibleMarkers(
+    mapView: MapView,
+    allStops: List<BusStop>,
+    onMarkerClick: (BusStop) -> Unit,
+    selectedStop: BusStop?,
+    userLocation: android.location.Location?
+) {
     mapView.overlays.clear()
+
+    if (userLocation != null) {
+        val userMarker = Marker(mapView).apply {
+            position = GeoPoint(userLocation.latitude, userLocation.longitude)
+            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+
+            val userIcon = ContextCompat.getDrawable(mapView.context, R.drawable.location_user)
+            icon = userIcon
+
+            setOnMarkerClickListener { _, _ -> true } // Wyłączamy dymek po kliknięciu na własną pozycję
+        }
+        mapView.overlays.add(userMarker)
+    }
 
     if (mapView.zoomLevelDouble < 14.5) {
         mapView.invalidate()
