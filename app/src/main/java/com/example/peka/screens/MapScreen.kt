@@ -20,8 +20,6 @@ import com.example.peka.viewmodels.StopsViewModel
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
@@ -68,6 +66,9 @@ fun MapScreen(
             onMarkerClick = { clickedStop ->
                 selectedStop = clickedStop
             },
+            onMapClick = {
+                selectedStop = null
+            },
             selectedStop = selectedStop,
             dashboardViewModel = dashboardViewModel
         )
@@ -79,7 +80,7 @@ fun MapScreen(
             exit = slideOutVertically(targetOffsetY = { it }),
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 110.dp)
         ) {
             selectedStop?.let { stop ->
 
@@ -92,53 +93,6 @@ fun MapScreen(
 
                 val stopDepartures = departuresMap[stop.stop_code] ?: emptyList()
 
-//                Card(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-//                    shape = RoundedCornerShape(16.dp),
-//                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-//                ) {
-//                    Column(
-//                        modifier = Modifier.padding(16.dp)
-//                    ) {
-//                        Row(
-//                            modifier = Modifier.fillMaxWidth(),
-//                            horizontalArrangement = Arrangement.SpaceBetween,
-//                            verticalAlignment = Alignment.CenterVertically
-//                        ) {
-//                            Text(
-//                                text = stop.stop_name,
-//                                fontSize = 20.sp,
-//                                fontWeight = FontWeight.Bold
-//                            )
-//
-//                            IconButton(onClick = { selectedStop = null }) {
-//                                Icon(Icons.Default.Close, contentDescription = "Zamknij")
-//                            }
-//                        }
-//
-//                        Text(
-//                            text = "Kod słupka: ${stop.stop_code}",
-//                            color = MaterialTheme.colorScheme.onSurfaceVariant
-//                        )
-//                        Text(
-//                            text = "Strefa: ${stop.zone_id}",
-//                            color = MaterialTheme.colorScheme.onSurfaceVariant
-//                        )
-//
-//                        Spacer(modifier = Modifier.height(16.dp))
-//
-//
-//                        Button(
-//                            onClick = {
-//                                navController.navigate("stop_details/${stop.stop_code}")
-//                            },
-//                            modifier = Modifier.fillMaxWidth()
-//                        ) {
-//                            Text("Pokaż odjazdy")
-//                        }
-//                    }
-//                }
                 StopMonitorCard(
                     stop = stop,
                     departures = stopDepartures,
@@ -146,6 +100,7 @@ fun MapScreen(
                         navController.navigate("stop_details/${stop.stop_code}")
                     },
                     isOnMapScreen = true
+
                 )
             }
         }

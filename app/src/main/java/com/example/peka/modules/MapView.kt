@@ -33,10 +33,12 @@ fun OSMMapView(
     stops: List<BusStop>,
     modifier: Modifier = Modifier,
     onMarkerClick: (BusStop) -> Unit,
+    onMapClick: () -> Unit = {},
     selectedStop: BusStop?,
     dashboardViewModel: DashboardViewModel = viewModel(),
 ) {
     val context = LocalContext.current
+    val currentOnMapClick by rememberUpdatedState(onMapClick)
 
     val currentStops by rememberUpdatedState(newValue = stops)
 
@@ -134,12 +136,12 @@ fun OSMMapView(
 
                 addMapListener(object : MapListener {
                     override fun onScroll(event: ScrollEvent?): Boolean {
-                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentSelectedStop, currentUserLocation)
+                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentOnMapClick, currentSelectedStop, currentUserLocation)
                         return true
                     }
 
                     override fun onZoom(event: ZoomEvent?): Boolean {
-                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentSelectedStop, currentUserLocation)
+                        updateVisibleMarkers(this@apply, currentStops, onMarkerClick, currentOnMapClick, currentSelectedStop, currentUserLocation)
                         return true
                     }
                 })
@@ -147,7 +149,7 @@ fun OSMMapView(
             }
         },
         update = { mapView ->
-            updateVisibleMarkers(mapView, currentStops, onMarkerClick, currentSelectedStop, currentUserLocation)
+            updateVisibleMarkers(mapView, currentStops, onMarkerClick, currentOnMapClick, currentSelectedStop, currentUserLocation)
 
         }
     )
@@ -158,10 +160,24 @@ fun updateVisibleMarkers(
     mapView: MapView,
     allStops: List<BusStop>,
     onMarkerClick: (BusStop) -> Unit,
+    onMapClick: () -> Unit,
     selectedStop: BusStop?,
     userLocation: android.location.Location?
 ) {
     mapView.overlays.clear()
+
+    // 1. DODAJEMY NIEWIDZIALNĄ WARSTWĘ WYKRYWAJĄCĄ KLIKNIĘCIA W TŁO
+    val mapEventsReceiver = object : org.osmdroid.events.MapEventsReceiver {
+        override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+            onMapClick() // Informujemy MapScreen, że kliknięto w tło
+            return true
+        }
+        override fun longPressHelper(p: GeoPoint?): Boolean {
+            return false // Nie interesuje nas przytrzymanie palca
+        }
+    }
+    // Dodajemy to na sam spód (indeks 0), żeby nie kradło kliknięć z pinezek
+    mapView.overlays.add(0, org.osmdroid.views.overlay.MapEventsOverlay(mapEventsReceiver))
 
     if (userLocation != null) {
         val userMarker = Marker(mapView).apply {
