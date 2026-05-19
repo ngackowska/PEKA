@@ -3,10 +3,7 @@ package com.example.peka.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
@@ -25,7 +22,6 @@ import com.example.peka.modules.StopMonitorCard
 import com.example.peka.viewmodels.DashboardViewModel
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.isActive
 
 @Composable
