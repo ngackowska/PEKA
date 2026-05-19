@@ -15,6 +15,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.room.Room
+import com.example.peka.database.AppDatabase
+import com.example.peka.database.FavoriteStopDao
 import com.example.peka.modules.MainNavigationContainer
 import com.example.peka.screens.BollardsScreen
 import com.example.peka.screens.DetailsScreen
@@ -35,8 +38,19 @@ class MainActivity : ComponentActivity() {
                 .setLocalCacheSettings(PersistentCacheSettings.newBuilder().build())
                 .build()
             db.firestoreSettings = settings
+
+
         } catch (e: Exception) {
         }
+
+        val database = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "peka_database" // Nazwa pliku bazy w telefonie
+        ).fallbackToDestructiveMigration().build()
+
+        // Wyciągasz "pilota" (DAO) do sterowania bazą
+        val favoriteStopDao = database.favoriteStopDao()
 
 
 //        enableEdgeToEdge()
@@ -45,7 +59,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    AppNavigation()
+                    AppNavigation(favoriteStopDao = favoriteStopDao)
                 }
             }
         }
@@ -53,7 +67,9 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(
+    favoriteStopDao: FavoriteStopDao
+) {
     val navController = rememberNavController()
 
     val auth = FirebaseAuth.getInstance()
@@ -70,7 +86,7 @@ fun AppNavigation() {
         }
 
         composable(route = "map_screen") {
-            MapScreen(navController = navController, modifier = Modifier.padding(bottom = 140.dp))
+            MapScreen(navController = navController, modifier = Modifier.padding(bottom = 140.dp),favoriteStopDao = favoriteStopDao)
         }
 
         composable(route = "dashboard_screen") {
@@ -80,7 +96,9 @@ fun AppNavigation() {
                     navController.navigate("login_screen") {
                         popUpTo(0) { inclusive = true }
                     }
-                })
+                },
+                favoriteStopDao = favoriteStopDao
+                )
         }
 
         composable(

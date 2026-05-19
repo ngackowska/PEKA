@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.sp
+import com.example.peka.database.FavoriteStopDao
 import com.example.peka.screens.LiveSearchScreen
 import com.example.peka.ui.theme.DarkText
 import com.example.peka.ui.theme.HalfTransparentDarkBackground
@@ -66,7 +67,8 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
 @Composable
 fun MainNavigationContainer(
     rootNavController: NavHostController,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    favoriteStopDao: FavoriteStopDao
 ) {
     val bottomNavController = rememberNavController()
     val items = listOf(
@@ -329,8 +331,10 @@ fun MainNavigationContainer(
             ) {
                 composable(Screen.Favorites.route) { FavoritesScreen(
                     navController = bottomNavController,
+                    rootNavController = rootNavController,
                     onLogout = onLogoutClick,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
+                    favoriteStopDao = favoriteStopDao
                 ) }
                 composable(Screen.Dashboard.route) { DashboardScreen(
                     navController = rootNavController,
@@ -339,6 +343,7 @@ fun MainNavigationContainer(
                 composable(Screen.Map.route) { MapScreen(
 //                navController = bottomNavController
                     navController = rootNavController,
+                    favoriteStopDao = favoriteStopDao
 //                    modifier = Modifier.padding(bottom = 140.dp) // 2. ZMIANA: Ręcznie odpychamy treść od dołu o wysokość paska
                 ) }
 

@@ -29,6 +29,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import android.Manifest
 import android.content.pm.PackageManager
+import com.example.peka.database.FavoriteStopDao
+import com.example.peka.modules.FavoriteButton
 
 
 @Composable
@@ -36,7 +38,8 @@ fun MapScreen(
     navController: NavController,
     viewModel: StopsViewModel = viewModel(),
     dashboardViewModel: DashboardViewModel = viewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    favoriteStopDao: FavoriteStopDao
 ) {
 
     val context = LocalContext.current
@@ -101,6 +104,10 @@ fun MapScreen(
                     },
                     isOnMapScreen = true
 
+                )
+                FavoriteButton(
+                    stop = stop,
+                    dao = favoriteStopDao
                 )
             }
         }
