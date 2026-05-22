@@ -1,6 +1,7 @@
 package com.example.peka.modules
 
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -13,6 +14,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import com.example.peka.database.BusStop
 import com.example.peka.database.FavoriteStopDao
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -37,10 +41,27 @@ fun FavoriteButton(
                     stop_id = stop.stop_id,
                     zone_id = stop.zone_id
                 )
+
+                // Pobieramy instancje Firebase
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                val db = FirebaseFirestore.getInstance()
+
                 if (isFav) {
                     dao.delete(entity)
+
+                    if (uid != null) {
+                        db.collection("users").document(uid)
+                            .update("favorite_stops", FieldValue.arrayRemove(stop.stop_code))
+                    }
                 } else {
                     dao.insert(entity)
+                    Log.d("ULUBIONE", "DODAJE")
+
+                    if (uid != null) {
+                        Log.d("ULUBIONE", "DODAJE BAZA")
+                        db.collection("users").document(uid)
+                            .update("favorite_stops", FieldValue.arrayUnion(stop.stop_code))
+                    }
                 }
             }
         }

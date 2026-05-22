@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -37,23 +38,12 @@ fun FavoritesScreen(
     val departuresMap by dashboardViewModel.departuresMap.collectAsState()
 
 
+
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("ekran ulubionych")
-        Button(onClick = { navController.navigate("home_screen") }) {
-            Text("wróć")
-        }
-
-        Button(onClick = {
-            FirebaseAuth.getInstance().signOut()
-
-            onLogout()
-        }) {
-            Text("Wyloguj się")
-        }
 
         val favoriteStops = favoriteStopDao.getAllFavorites().collectAsState(initial = emptyList()).value
 

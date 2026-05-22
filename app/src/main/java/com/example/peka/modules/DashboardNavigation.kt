@@ -50,6 +50,7 @@ import com.example.peka.ui.theme.HalfTransparentDarkBackground
 import com.example.peka.ui.theme.TransparentDarkBackground
 import com.example.peka.ui.theme.neumorphicShadow
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 // Nawigacja dashboard (dolny pasek - ulubione, dashboard, mapa)
@@ -133,6 +134,9 @@ fun MainNavigationContainer(
                     selected = false,
                     onClick = {
                         coroutineScope.launch { drawerState.close() }
+                        coroutineScope.launch(Dispatchers.IO) {
+                            favoriteStopDao.clearAllFavorites()
+                        }
                         FirebaseAuth.getInstance().signOut()
                         onLogoutClick()
                     }
@@ -338,7 +342,8 @@ fun MainNavigationContainer(
                 ) }
                 composable(Screen.Dashboard.route) { DashboardScreen(
                     navController = rootNavController,
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier.padding(innerPadding),
+                    favoriteStopDao = favoriteStopDao
                 ) }
                 composable(Screen.Map.route) { MapScreen(
 //                navController = bottomNavController

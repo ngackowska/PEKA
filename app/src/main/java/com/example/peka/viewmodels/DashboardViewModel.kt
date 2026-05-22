@@ -15,6 +15,10 @@ import android.location.LocationManager
 import android.location.LocationListener
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
+import com.example.peka.database.FavoriteStopDao
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 
 class DashboardViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -38,6 +42,34 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
 
     private val locationManager = application.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+
+    private var hasSyncedFavorites = false
+
+    fun syncFavoritesFromCloud(dao: FavoriteStopDao, allStops: List<BusStop>) {
+        // Jeśli już zsynchronizowaliśmy dane w tej sesji lub nie mamy jeszcze listy przystanków - przerywamy
+        if (hasSyncedFavorites || allStops.isEmpty()) return
+
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("users").document(uid).get().addOnSuccessListener { snapshot ->
+            // Pobieramy listę kodów (Stringów) z chmury
+            val favoriteCodes = snapshot.get("favorite_stops") as? List<String> ?: emptyList()
+
+            viewModelScope.launch(Dispatchers.IO) {
+                // MAGIA: Filtrujemy wszystkie przystanki (allStops), zostawiając tylko te z Firebase
+                val stopsToInsert = allStops.filter { favoriteCodes.contains(it.stop_code) }
+
+                // Wrzucamy pełne obiekty do lokalnej bazy Room
+                stopsToInsert.forEach { dao.insert(it) }
+            }
+
+            // Zaznaczamy, że pobieranie zakończone sukcesem
+            hasSyncedFavorites = true
+        }
+    }
+
 
     @SuppressLint("MissingPermission")
     fun startLocationUpdates() {

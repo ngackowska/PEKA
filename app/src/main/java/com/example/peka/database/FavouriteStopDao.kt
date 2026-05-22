@@ -22,4 +22,7 @@ interface FavoriteStopDao {
     // USUŃ słówko suspend i zwracany typ
     @Delete
     fun delete(stop: BusStop)
+
+    @Query("DELETE FROM favorite_stops")
+    fun clearAllFavorites()
 }
