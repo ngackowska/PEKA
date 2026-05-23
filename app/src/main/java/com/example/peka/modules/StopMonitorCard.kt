@@ -31,6 +31,11 @@ import com.example.peka.ui.theme.HalfTransparentDarkCardBackground
 import com.example.peka.ui.theme.TransparentDarkCardBackground
 import com.example.peka.ui.theme.neumorphicShadow
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Icon
+
+
 // Komponent kafelka z dashboard (obrazek mapki + odjazdy)
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
@@ -38,7 +43,10 @@ fun StopMonitorCard(
     stop: BusStop,
     departures: List<TimeData>,
     onClick: () -> Unit,
-    isOnMapScreen: Boolean
+    isOnMapScreen: Boolean,
+    isFavorite: Boolean = false, // Sprawdzamy czy to ulubiony
+    alarmLine: String? = null,   // Numer linii, jeśli alarm jest ustawiony
+    onAlarmClick: () -> Unit = {} // Akcja po kliknięciu w dzwoneczek
 ) {
     Card(
         modifier = Modifier
@@ -191,6 +199,39 @@ fun StopMonitorCard(
                                 }
                             }
                         }
+
+
+                        if (isFavorite) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .padding(end = 12.dp, bottom = 12.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .background(Color(0xFF2A2A2A), RoundedCornerShape(50))
+                                        .clickable { onAlarmClick() }
+                                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Notifications,
+                                        contentDescription = "Alarm",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Text(
+                                        text = if (alarmLine != null) "Linia $alarmLine" else "Ustaw alarm",
+                                        color = Color.White,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+
+
                     }
                 }
             }

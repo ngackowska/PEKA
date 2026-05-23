@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.peka.database.AlarmDao
 import com.example.peka.database.FavoriteStopDao
 import com.example.peka.modules.StopMonitorCard
 import com.example.peka.viewmodels.DashboardViewModel
@@ -33,6 +34,7 @@ fun FavoritesScreen(
     modifier: Modifier,
     favoriteStopDao: FavoriteStopDao,
     dashboardViewModel: DashboardViewModel = viewModel(),
+    alarmDao: AlarmDao
     ) {
 
     val departuresMap by dashboardViewModel.departuresMap.collectAsState()
@@ -67,6 +69,8 @@ fun FavoritesScreen(
 //                        Text(favoriteEntity.stop_name)
 //                    }
 
+                    val alarm by alarmDao.getAlarmForStop(favoriteEntity.stop_code).collectAsState(initial = null)
+
                     // Pobranie czasów odjazdów co 20s
                     LaunchedEffect(favoriteEntity.stop_code) {
                         while (isActive) {
@@ -83,7 +87,13 @@ fun FavoritesScreen(
                         onClick = {
                             rootNavController.navigate("stop_details/${favoriteEntity.stop_code}")
                         },
-                        isOnMapScreen = false
+                        isOnMapScreen = false,
+
+                        isFavorite = true,
+                        alarmLine = alarm?.line,
+                        onAlarmClick = {
+                            rootNavController.navigate("alarm_screen/${favoriteEntity.stop_code}/${favoriteEntity.stop_name}")
+                        }
                     )
                 }
             }

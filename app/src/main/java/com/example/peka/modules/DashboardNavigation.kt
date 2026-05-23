@@ -43,7 +43,9 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.sp
+import com.example.peka.database.AlarmDao
 import com.example.peka.database.FavoriteStopDao
+import com.example.peka.screens.AlarmScreen
 import com.example.peka.screens.LiveSearchScreen
 import com.example.peka.ui.theme.DarkText
 import com.example.peka.ui.theme.HalfTransparentDarkBackground
@@ -69,7 +71,8 @@ sealed class Screen(val route: String, val label: String, val icon: @Composable 
 fun MainNavigationContainer(
     rootNavController: NavHostController,
     onLogoutClick: () -> Unit,
-    favoriteStopDao: FavoriteStopDao
+    favoriteStopDao: FavoriteStopDao,
+    alarmDao: AlarmDao
 ) {
     val bottomNavController = rememberNavController()
     val items = listOf(
@@ -338,7 +341,8 @@ fun MainNavigationContainer(
                     rootNavController = rootNavController,
                     onLogout = onLogoutClick,
                     modifier = Modifier.padding(innerPadding),
-                    favoriteStopDao = favoriteStopDao
+                    favoriteStopDao = favoriteStopDao,
+                    alarmDao = alarmDao
                 ) }
                 composable(Screen.Dashboard.route) { DashboardScreen(
                     navController = rootNavController,
@@ -359,6 +363,8 @@ fun MainNavigationContainer(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
+
+
 
 
 

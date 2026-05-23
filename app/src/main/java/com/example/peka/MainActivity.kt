@@ -16,9 +16,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.room.Room
+import com.example.peka.database.AlarmDao
 import com.example.peka.database.AppDatabase
 import com.example.peka.database.FavoriteStopDao
 import com.example.peka.modules.MainNavigationContainer
+import com.example.peka.screens.AlarmScreen
 import com.example.peka.screens.BollardsScreen
 import com.example.peka.screens.DetailsScreen
 import com.example.peka.screens.LoginScreen
@@ -51,6 +53,7 @@ class MainActivity : ComponentActivity() {
 
         // Wyciągasz "pilota" (DAO) do sterowania bazą
         val favoriteStopDao = database.favoriteStopDao()
+        val alarmDao = database.alarmDao()
 
 
 //        enableEdgeToEdge()
@@ -59,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    AppNavigation(favoriteStopDao = favoriteStopDao)
+                    AppNavigation(favoriteStopDao = favoriteStopDao, alarmDao = alarmDao)
                 }
             }
         }
@@ -68,7 +71,8 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun AppNavigation(
-    favoriteStopDao: FavoriteStopDao
+    favoriteStopDao: FavoriteStopDao,
+    alarmDao: AlarmDao
 ) {
     val navController = rememberNavController()
 
@@ -97,7 +101,8 @@ fun AppNavigation(
                         popUpTo(0) { inclusive = true }
                     }
                 },
-                favoriteStopDao = favoriteStopDao
+                favoriteStopDao = favoriteStopDao,
+                alarmDao = alarmDao
                 )
         }
 
@@ -112,6 +117,18 @@ fun AppNavigation(
         composable(route = "bollards_list/{stopName}") { backStackEntry ->
             val stopName = backStackEntry.arguments?.getString("stopName") ?: ""
             BollardsScreen(navController = navController, stopName = stopName)
+        }
+
+        composable("alarm_screen/{stopCode}/{stopName}") { backStackEntry ->
+            val stopCode = backStackEntry.arguments?.getString("stopCode") ?: ""
+            val stopName = backStackEntry.arguments?.getString("stopName") ?: ""
+
+            AlarmScreen(
+                navController = navController, // Lub inny odpowiedni kontroler
+                stopCode = stopCode,
+                stopName = stopName,
+                alarmDao = alarmDao // Przekazujesz nowe DAO
+            )
         }
 
     }
