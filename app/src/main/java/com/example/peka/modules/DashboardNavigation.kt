@@ -347,7 +347,8 @@ fun MainNavigationContainer(
                 composable(Screen.Dashboard.route) { DashboardScreen(
                     navController = rootNavController,
                     modifier = Modifier.padding(innerPadding),
-                    favoriteStopDao = favoriteStopDao
+                    favoriteStopDao = favoriteStopDao,
+                    alarmDao = alarmDao
                 ) }
                 composable(Screen.Map.route) { MapScreen(
 //                navController = bottomNavController

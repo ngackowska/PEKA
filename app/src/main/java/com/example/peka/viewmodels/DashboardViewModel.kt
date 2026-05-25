@@ -15,6 +15,7 @@ import android.location.LocationManager
 import android.location.LocationListener
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
+import com.example.peka.database.AlarmEntity
 import com.example.peka.database.FavoriteStopDao
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -46,7 +47,11 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     private var hasSyncedFavorites = false
 
-    fun syncFavoritesFromCloud(dao: FavoriteStopDao, allStops: List<BusStop>) {
+    fun syncFavoritesFromCloud(
+        dao: FavoriteStopDao,
+        alarmDao: com.example.peka.database.AlarmDao,
+        allStops: List<BusStop>
+    ) {
         // Jeśli już zsynchronizowaliśmy dane w tej sesji lub nie mamy jeszcze listy przystanków - przerywamy
         if (hasSyncedFavorites || allStops.isEmpty()) return
 
@@ -57,12 +62,31 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             // Pobieramy listę kodów (Stringów) z chmury
             val favoriteCodes = snapshot.get("favorite_stops") as? List<String> ?: emptyList()
 
+            val remoteAlarms = snapshot.get("alarms") as? Map<String, Map<String, Any>> ?: emptyMap()
+
             viewModelScope.launch(Dispatchers.IO) {
                 // MAGIA: Filtrujemy wszystkie przystanki (allStops), zostawiając tylko te z Firebase
                 val stopsToInsert = allStops.filter { favoriteCodes.contains(it.stop_code) }
 
                 // Wrzucamy pełne obiekty do lokalnej bazy Room
                 stopsToInsert.forEach { dao.insert(it) }
+
+                if (remoteAlarms is Map<*, *>) {
+                    remoteAlarms.forEach { (stopCode, data) ->
+                        val alarmMap = data as? Map<*, *> ?: return@forEach
+
+                        val alarmEntity = AlarmEntity(
+                            stop_code = stopCode.toString(),
+                            line = alarmMap["line"]?.toString() ?: "",
+                            startTime = alarmMap["startTime"]?.toString() ?: "07:00",
+                            endTime = alarmMap["endTime"]?.toString() ?: "09:00",
+                            minutesBefore = (alarmMap["minutesBefore"] as? Long)?.toInt() ?: 5
+                        )
+                        alarmDao.insertAlarm(alarmEntity)
+                    }
+                }
+
+
             }
 
             // Zaznaczamy, że pobieranie zakończone sukcesem

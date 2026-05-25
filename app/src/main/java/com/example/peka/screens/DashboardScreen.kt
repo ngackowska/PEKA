@@ -36,6 +36,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
 import androidx.compose.ui.platform.LocalContext
+import com.example.peka.database.AlarmDao
 import com.example.peka.database.FavoriteStopDao
 
 
@@ -45,7 +46,8 @@ fun DashboardScreen(
     dashboardViewModel: DashboardViewModel = viewModel(),
     stopsViewModel: StopsViewModel = viewModel(),
     modifier: Modifier,
-    favoriteStopDao: FavoriteStopDao
+    favoriteStopDao: FavoriteStopDao,
+    alarmDao: AlarmDao
 ) {
 
     val context = LocalContext.current
@@ -104,7 +106,7 @@ fun DashboardScreen(
         if (allStops.isNotEmpty()) {
             // Próbujemy pobrać ulubione z Firebase i wrzucić do Room.
             // ViewModel sam sprawdzi flagę "hasSyncedFavorites", więc zrobi to tylko raz po zalogowaniu!
-            dashboardViewModel.syncFavoritesFromCloud(favoriteStopDao, allStops)
+            dashboardViewModel.syncFavoritesFromCloud(favoriteStopDao, alarmDao, allStops)
         }
     }
 

@@ -20,6 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+
 @Composable
 fun FavoriteButton(
     stop: BusStop,
@@ -52,6 +53,10 @@ fun FavoriteButton(
                     if (uid != null) {
                         db.collection("users").document(uid)
                             .update("favorite_stops", FieldValue.arrayRemove(stop.stop_code))
+
+                        db.collection("users").document(uid)
+                            .update("alarms.${stop.stop_code}", FieldValue.delete())
+
                     }
                 } else {
                     dao.insert(entity)

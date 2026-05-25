@@ -14,6 +14,8 @@ import androidx.navigation.NavController
 import com.example.peka.database.AlarmDao
 import com.example.peka.database.AlarmEntity
 import com.example.peka.viewmodels.DashboardViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -134,6 +136,26 @@ fun AlarmScreen(
                                     minutesBefore = minutesBefore.toInt()
                                 )
                             )
+
+
+                            // 2. Zapis do chmury Firebase Firestore
+                            val uid = FirebaseAuth.getInstance().currentUser?.uid
+                            if (uid != null) {
+                                val db = FirebaseFirestore.getInstance()
+
+                                // Przygotowujemy paczkę danych dla tego jednego alarmu
+                                val alarmData = hashMapOf(
+                                    "line" to selectedLine,
+                                    "startTime" to startTime,
+                                    "endTime" to endTime,
+                                    "minutesBefore" to minutesBefore.toInt()
+                                )
+
+                                // Używamy notacji "alarms.KOD", aby stworzyć lub zaktualizować tylko ten jeden przystanek
+                                db.collection("users").document(uid)
+                                    .update("alarms.$stopCode", alarmData)
+                            }
+
                         }
                         navController.popBackStack()
                     }
