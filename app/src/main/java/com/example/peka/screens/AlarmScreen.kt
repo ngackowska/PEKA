@@ -7,12 +7,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.peka.database.AlarmDao
 import com.example.peka.database.AlarmEntity
+import com.example.peka.services.AlarmScheduler
 import com.example.peka.viewmodels.DashboardViewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -41,6 +43,8 @@ fun AlarmScreen(
     var startTime by remember { mutableStateOf("07:00") }
     var endTime by remember { mutableStateOf("09:00") }
     var minutesBefore by remember { mutableStateOf(5f) }
+
+    val context = LocalContext.current
 
     LaunchedEffect(stopCode) {
         dashboardViewModel.fetchDeparturesForStop(stopCode)
@@ -154,9 +158,25 @@ fun AlarmScreen(
                                 // Używamy notacji "alarms.KOD", aby stworzyć lub zaktualizować tylko ten jeden przystanek
                                 db.collection("users").document(uid)
                                     .update("alarms.$stopCode", alarmData)
+
                             }
 
                         }
+
+//
+//                        ALARM
+//                         Ustawiamy systemowy wyzwalacz!
+                        AlarmScheduler.scheduleAlarm(
+                            context = context, // Pobierz context z LocalContext.current na górze ekranu
+                            stopCode = stopCode,
+                            stopName = stopName,
+                            line = selectedLine,
+                            startTime = startTime,
+                            minutesBefore = minutesBefore.toInt()
+                        )
+
+
+
                         navController.popBackStack()
                     }
                 },
