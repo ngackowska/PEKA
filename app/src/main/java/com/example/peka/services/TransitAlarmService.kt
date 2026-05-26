@@ -40,6 +40,7 @@ class TransitAlarmService : Service() {
             val line = intent.getStringExtra("LINE") ?: return START_NOT_STICKY
 
             val minutesBefore = intent.getIntExtra("MINUTES_BEFORE", 5)
+            val endTime = intent.getStringExtra("END_TIME") ?: "23:59"
 
             val jobId = AlarmScheduler.generateAlarmId(stopCode, line)
 
@@ -47,7 +48,7 @@ class TransitAlarmService : Service() {
             if (!activeJobs.containsKey(jobId)) {
                 // Odpalamy nowy stoper dla tego alarmu
                 val job = serviceScope.launch {
-                    startPollingForStop(jobId, stopCode, stopName, line, minutesBefore)
+                    startPollingForStop(jobId, stopCode, stopName, line, minutesBefore, endTime)
                 }
                 activeJobs[jobId] = job
             }
@@ -72,45 +73,64 @@ class TransitAlarmService : Service() {
         stopCode: String,
         stopName: String,
         line: String,
-        minutesBefore: Int // <-- Dodany parametr czasu z suwaka
+        minutesBefore: Int,
+        endTime: String
     ) {
+        // Zbiór, który zapamięta godziny odjazdów (np. "07:15"), o których już wysłaliśmy powiadomienie
+        val notifiedDepartures = mutableSetOf<String>()
+
         try {
             while (isActive) {
-                try {
-                    // 1. Przygotowujemy zapytanie do API PEKA (tak samo jak w ViewModel)
-                    val p0Json = "{\"symbol\":\"$stopCode\"}"
+                // 1. SPRAWDZAMY, CZY OKIENKO CZASOWE SIĘ SKOŃCZYŁO
+                if (isPastEndTime(endTime)) {
+                    break // Zegar minął endTime (np. jest już 09:01), przerywamy nasłuchiwanie!
+                }
 
-                    // Odpytujemy API (to zadziała, bo jesteśmy w CoroutineScope(Dispatchers.IO))
+                try {
+                    val p0Json = "{\"symbol\":\"$stopCode\"}"
                     val response = com.example.peka.api.pekaApiService.getTimes(p0 = p0Json)
                     val departures = response.success.times
 
-                    // 2. Szukamy pierwszego (najbliższego) odjazdu dla naszej wybranej linii
-                    val targetDeparture = departures.firstOrNull { it.line == line }
+                    // 2. Szukamy WSZYSTKICH nadjeżdżających tramwajów wybranej linii
+                    val upcomingTrams = departures.filter { it.line == line }
 
-                    // 3. Sprawdzamy warunek alarmu
-                    if (targetDeparture != null) {
-                        if (targetDeparture.minutes <= minutesBefore) {
-                            // STRZAŁ! Tramwaj nadjeżdża w określonym czasie.
-                            sendLoudNotification(stopName, line, targetDeparture.minutes, jobId)
+                    for (tram in upcomingTrams) {
+                        // Jeśli tramwaj jest za X minut, a my JESZCZE O NIM NIE MÓWILIŚMY
+                        if (tram.minutes <= minutesBefore && !notifiedDepartures.contains(tram.departure)) {
 
-                            // Przerwanie pętli - robota dla tego alarmu jest skończona
-                            break
+                            sendLoudNotification(stopName, line, tram.minutes, jobId)
+
+                            // Dodajemy jego unikalny czas odjazdu do "pamięci", by nie powiadomić o nim za minutę
+                            notifiedDepartures.add(tram.departure)
                         }
                     }
+
                 } catch (e: Exception) {
-                    // Chwilowy brak internetu lub błąd serwera PEKA.
-                    // Ignorujemy błąd, pętla pójdzie dalej i spróbuje znów za minutę.
                     e.printStackTrace()
                 }
 
-                // 4. Odczekujemy 60 sekund przed kolejnym zapytaniem (oszczędzanie baterii i serwerów API)
+                // Czekamy 60 sekund
                 delay(60_000L)
             }
         } finally {
-            // Sprzątanie po zakończeniu zadania (zawsze się wykona, nawet po 'break')
             activeJobs.remove(jobId)
             checkIfSelfDestructNeeded()
         }
+    }
+
+    // Funkcja pomocnicza: Sprawdza, czy bieżący czas na telefonie jest późniejszy niż 'endTime'
+    private fun isPastEndTime(endTime: String): Boolean {
+        val parts = endTime.split(":")
+        if (parts.size != 2) return false
+
+        val endHour = parts[0].toIntOrNull() ?: return false
+        val endMinute = parts[1].toIntOrNull() ?: return false
+
+        val now = java.util.Calendar.getInstance()
+        val currentHour = now.get(java.util.Calendar.HOUR_OF_DAY)
+        val currentMinute = now.get(java.util.Calendar.MINUTE)
+
+        return currentHour > endHour || (currentHour == endHour && currentMinute >= endMinute)
     }
 
     private fun checkIfSelfDestructNeeded() {

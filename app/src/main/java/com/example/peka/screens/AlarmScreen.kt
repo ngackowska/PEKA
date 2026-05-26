@@ -172,6 +172,7 @@ fun AlarmScreen(
                             stopName = stopName,
                             line = selectedLine,
                             startTime = startTime,
+                            endTime = endTime,
                             minutesBefore = minutesBefore.toInt()
                         )
 

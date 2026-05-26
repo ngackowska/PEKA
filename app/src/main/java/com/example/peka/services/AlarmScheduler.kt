@@ -14,8 +14,15 @@ object AlarmScheduler {
         return "${stopCode}_${line}".hashCode()
     }
 
-    fun scheduleAlarm(context: Context, stopCode: String, stopName: String, line: String, startTime: String,
-                      minutesBefore: Int) {
+    fun scheduleAlarm(
+        context: Context,
+        stopCode: String,
+        stopName: String,
+        line: String,
+        startTime: String,
+        endTime: String,
+        minutesBefore: Int
+    ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         // Przygotowujemy intencję, która wybudzi nasz Receiver
@@ -23,6 +30,7 @@ object AlarmScheduler {
             putExtra("STOP_CODE", stopCode)
             putExtra("STOP_NAME", stopName)
             putExtra("LINE", line)
+            putExtra("END_TIME", endTime)
             putExtra("MINUTES_BEFORE", minutesBefore)
         }
 

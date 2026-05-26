@@ -13,6 +13,7 @@ class AlarmReceiver : BroadcastReceiver() {
         val stopName = intent.getStringExtra("STOP_NAME") ?: return
         val line = intent.getStringExtra("LINE") ?: return
         val minutesBefore = intent.getIntExtra("MINUTES_BEFORE", 5)
+        val endTime = intent.getStringExtra("END_TIME") ?: "23:59"
 
         // Tworzymy rozkaz startu/aktualizacji dla naszego Serwisu Nasłuchującego
         val serviceIntent = Intent(context, TransitAlarmService::class.java).apply {
@@ -20,6 +21,7 @@ class AlarmReceiver : BroadcastReceiver() {
             putExtra("STOP_CODE", stopCode)
             putExtra("STOP_NAME", stopName)
             putExtra("LINE", line)
+            putExtra("END_TIME", endTime)
             putExtra("MINUTES_BEFORE", minutesBefore)
         }
 
