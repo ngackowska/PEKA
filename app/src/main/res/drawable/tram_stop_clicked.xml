@@ -1,0 +1,31 @@
+<!--
+  ~ Copyright (C) 2026 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+  <path
+      android:pathData="M78.86,0L881.14,0A78.86,78.86 0,0 1,960 78.86L960,881.14A78.86,78.86 0,0 1,881.14 960L78.86,960A78.86,78.86 0,0 1,0 881.14L0,78.86A78.86,78.86 0,0 1,78.86 0z"
+      android:strokeWidth="235.994"
+      android:fillColor="#149c3d"
+      android:strokeColor="#00000000"
+      android:strokeLineCap="square"/>
+  <path
+      android:pathData="m234.09,649.07v-292.02q0,-74.54 65.32,-97.6 65.32,-23.05 149.85,-25.36l23.05,-46.11L349.36,187.98q-9.99,0 -16.52,-6.53 -6.53,-6.53 -6.53,-16.52 0,-9.99 6.53,-16.52 6.53,-6.53 16.52,-6.53h261.28q9.99,0 16.52,6.53 6.53,6.53 6.53,16.52 0,9.99 -6.53,16.52 -6.53,6.53 -16.52,6.53h-76.85l-23.05,46.11q91.45,2.31 153.31,24.98 61.86,22.67 61.86,97.98v292.02q0,45.34 -31.12,76.46 -31.12,31.12 -76.46,31.12l15.37,15.37q13.06,13.06 6.15,29.59 -6.92,16.52 -25.36,16.52 -5.38,0 -10.37,-1.92 -5,-1.92 -8.84,-5.76L541.48,756.65L418.52,756.65l-53.79,53.79q-3.84,3.84 -8.84,5.76 -5,1.92 -10.37,1.92 -17.68,0 -24.98,-16.52 -7.3,-16.52 5.76,-29.59l15.37,-15.37q-45.34,0 -76.46,-31.12 -31.12,-31.12 -31.12,-76.46zM512.66,650.99q13.45,-13.45 13.45,-32.66 0,-19.21 -13.45,-32.66 -13.45,-13.45 -32.66,-13.45 -19.21,0 -32.66,13.45 -13.45,13.45 -13.45,32.66 0,19.21 13.45,32.66 13.45,13.45 32.66,13.45 19.21,0 32.66,-13.45zM295.56,480h368.87v-92.22L295.56,387.78Z"
+      android:strokeWidth="0.768483"
+      android:fillColor="#252525"/>
+</vector>

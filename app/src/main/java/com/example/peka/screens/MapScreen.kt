@@ -29,8 +29,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import android.Manifest
 import android.content.pm.PackageManager
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.unit.Dp
 import com.example.peka.database.FavoriteStopDao
 import com.example.peka.modules.FavoriteButton
+import com.example.peka.ui.theme.HalfTransparentDarkBackground
+import com.example.peka.ui.theme.TransparentDarkBackground
 
 
 @Composable
@@ -46,6 +53,7 @@ fun MapScreen(
     val allStops by viewModel.allStops.collectAsState()
     var selectedStop by remember { mutableStateOf<BusStop?>(null) }
     val departuresMap by dashboardViewModel.departuresMap.collectAsState()
+    var gradientHeight by remember { mutableStateOf<Dp>(100.dp) }
 
     LaunchedEffect(Unit) {
         val hasPermission = ContextCompat.checkSelfPermission(
@@ -60,7 +68,7 @@ fun MapScreen(
     }
 
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
 
         OSMMapView(
             stops = allStops,
@@ -68,13 +76,32 @@ fun MapScreen(
             modifier = Modifier.fillMaxSize(),
             onMarkerClick = { clickedStop ->
                 selectedStop = clickedStop
+                gradientHeight = 500.dp
             },
             onMapClick = {
                 selectedStop = null
+                gradientHeight = 100.dp
             },
             selectedStop = selectedStop,
             dashboardViewModel = dashboardViewModel
         )
+
+        val customBrush = Brush.verticalGradient(
+            colorStops = arrayOf(
+                0.0f to TransparentDarkBackground,
+                0.5f to HalfTransparentDarkBackground,   // Zaczynamy czerwonym na samej górze
+                1.0f to HalfTransparentDarkBackground,   // Trzymamy solidny czerwony aż do równej połowy (50%)
+                  // Od połowy w dół płynnie przechodzimy w niebieski
+            )
+        )
+
+        Box(
+            modifier = Modifier.fillMaxWidth()
+                .height(gradientHeight)
+                .background(brush = customBrush)
+        ){
+
+        }
 
 
         AnimatedVisibility(
@@ -95,20 +122,28 @@ fun MapScreen(
                 }
 
                 val stopDepartures = departuresMap[stop.stop_code] ?: emptyList()
+                Box(
+                    modifier = Modifier.padding(bottom=50.dp),
+                    contentAlignment = Alignment.BottomStart
+                ){
+                    StopMonitorCard(
+                        stop = stop,
+                        departures = stopDepartures,
+                        onClick = {
+                            navController.navigate("stop_details/${stop.stop_code}")
+                        },
+                        isOnMapScreen = true,
+                        isOnFavouriteScreen = false
 
-                StopMonitorCard(
-                    stop = stop,
-                    departures = stopDepartures,
-                    onClick = {
-                        navController.navigate("stop_details/${stop.stop_code}")
-                    },
-                    isOnMapScreen = true
+                    )
+                    FavoriteButton(
+                        stop = stop,
+                        dao = favoriteStopDao,
+                        modifier = Modifier.padding(10.dp, 20.dp)
+                    )
 
-                )
-                FavoriteButton(
-                    stop = stop,
-                    dao = favoriteStopDao
-                )
+                }
+
             }
         }
 

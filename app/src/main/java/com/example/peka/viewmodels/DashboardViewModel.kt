@@ -12,8 +12,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import android.location.Location
 import android.location.LocationManager
-import android.location.LocationListener
-import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
 import com.example.peka.database.AlarmEntity
 import com.example.peka.database.FavoriteStopDao
@@ -167,7 +165,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             results[0]
         }
 
-        _nearestStops.value = sortedStops.take(2)
+        _nearestStops.value = sortedStops.take(3)
     }
 
 }

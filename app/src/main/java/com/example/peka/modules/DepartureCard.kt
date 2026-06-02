@@ -18,12 +18,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.peka.api.TimeData
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.Icon
 import androidx.compose.ui.platform.LocalContext
 import com.example.peka.R
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import com.example.peka.ui.theme.DarkCardBackground
+import com.example.peka.ui.theme.DarkText
+import com.example.peka.ui.theme.neumorphicShadow
 
 // Komponent wyświetlający informacje o danym odjeździe pojazdu
 // (pojedynczy odjazd danej linii widoczny np. po kliknięciu w kafelek na dashboard)
@@ -33,39 +40,71 @@ fun DepartureCard(timeData: TimeData) {
     val context = LocalContext.current
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .neumorphicShadow(
+                20.dp,
+                10.dp
+            ),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        colors = CardColors(
+            containerColor = DarkCardBackground,
+            contentColor = DarkText,
+            disabledContainerColor = DarkCardBackground,
+            disabledContentColor = DarkText
+        )
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp, 16.dp, 16.dp, 8.dp),
+                .padding(20.dp,16.dp,20.dp,0.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column(Modifier.weight(0.6f)){
                 Text(
-                    text = "Linia: ${timeData.line}",
+                    text = "Linia ${timeData.line}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "Kierunek: ${timeData.direction}")
+                Spacer(modifier = Modifier.height(2.dp))
+                Row(verticalAlignment = Alignment.Bottom){
+                    Text(text = "Kierunek", fontWeight = FontWeight.Light, fontSize = 12.sp,modifier = Modifier.alignByBaseline())
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = "${timeData.direction}", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.alignByBaseline())
+
+                }
+
 
 
 
             }
-            Text(
-                text = "${timeData.minutes} min",
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 20.sp
-            )
+            Column(Modifier.weight(0.4f), verticalArrangement = Arrangement.Bottom, horizontalAlignment = Alignment.End){
+                Text(
+                    text = "${timeData.minutes} min",
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 24.sp,
+                    textAlign = TextAlign.End
+                )
+
+                if (timeData.departure != null) {
+                    Row(verticalAlignment = Alignment.Bottom){
+                        Text(text = "Odjazd", fontWeight = FontWeight.Light, fontSize = 12.sp,modifier = Modifier.alignByBaseline())
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "${timeData.departure.substringAfter("T").take(5)}", fontWeight = FontWeight.Bold, fontSize = 14.sp, modifier = Modifier.alignByBaseline())
+                    }
+                }
+            }
+
         }
+
+        Spacer(Modifier.height(10.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp, 0.dp, 16.dp, 16.dp),
+                .padding(20.dp,0.dp, 20.dp,16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -73,119 +112,136 @@ fun DepartureCard(timeData: TimeData) {
             Column() {
 
                 if (timeData.ticketMachine == true) {
-                    Text(text = "Dostępny biletomat.", fontSize = 12.sp)
+                    Row(){
+                    Text(text = "Dostępny biletomat.", fontWeight = FontWeight.Light, fontSize = 12.sp,modifier = Modifier.alignByBaseline())
+                    }
                 }
 
                 if (timeData.vehicle != null) {
-                    Text(text = "Numer pojazdu: ${timeData.vehicle}", fontSize = 12.sp)
+                    Row(verticalAlignment = Alignment.Bottom){
+                        Text(text = "Numer pojazdu", fontWeight = FontWeight.Light, fontSize = 12.sp,modifier = Modifier.alignByBaseline())
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "${timeData.vehicle}", fontWeight = FontWeight.Bold, fontSize = 14.sp, modifier = Modifier.alignByBaseline())
+                    }
                 }
 
-                if (timeData.departure != null) {
-                    Text(text = "Odjazd: ${timeData.departure.substringAfter("T").take(5)}", fontSize = 12.sp)
-                }
+
             }
+
 
             // Tu jakieś ikonki pewnie apbo krótko
             // na razie kilka przykładowych żeby zobaczyć co to (lowEntrance vs lowFloor nie wiem które to xD)
             // do porównania z PEKA
 
             Row {
+                val iconSize = 24.dp
+
+                Spacer(Modifier.height(iconSize).width(1.dp))
+
                 if (timeData.bike == true) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.bike),
                         contentDescription = "Możliwość przewozu rowerów.",
                         modifier = Modifier
-                            .size(32.dp) // Ustawienie rozmiaru obrazka
+                            .size(iconSize) // Ustawienie rozmiaru obrazka
                             .clickable {
                                 // Wyświetlenie dymku z tekstem po kliknięciu
                                 Toast.makeText(context, "Możliwość przewozu rowerów.", Toast.LENGTH_SHORT).show()
-                            }
+                            },
+                        tint = DarkText
                     )
                 }
 
 
 
                 if (timeData.airCnd == true) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.snow),
                         contentDescription = "Pojazd wyposażony w klimatyzację.",
                         modifier = Modifier
-                            .size(32.dp) // Ustawienie rozmiaru obrazka
+                            .size(iconSize) // Ustawienie rozmiaru obrazka
                             .padding(start = 3.dp)
                             .clickable {
                                 // Wyświetlenie dymku z tekstem po kliknięciu
                                 Toast.makeText(context, "Pojazd wyposażony w klimatyzację.", Toast.LENGTH_SHORT).show()
-                            }
+                            },
+                        tint = DarkText
                     )
                 }
 
                 if (timeData.charger == true) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.usb),
                         contentDescription = "Możliwość ładowania gniazdem USB.",
                         modifier = Modifier
-                            .size(32.dp) // Ustawienie rozmiaru obrazka
+                            .size(iconSize) // Ustawienie rozmiaru obrazka
                             .padding(start = 3.dp)
                             .clickable {
                                 // Wyświetlenie dymku z tekstem po kliknięciu
                                 Toast.makeText(context, "Możliwość ładowania gniazdem USB.", Toast.LENGTH_SHORT).show()
-                            }
+                            },
+                        tint = DarkText
                     )
                 }
 
                 if (timeData.lowEntranceBus == true) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.wheel_star),
                         contentDescription = "Kurs obsługiwany pojazdem z niską podłogą w środkowym członie.",
                         modifier = Modifier
-                            .size(32.dp) // Ustawienie rozmiaru obrazka
+                            .size(iconSize) // Ustawienie rozmiaru obrazka
                             .padding(start = 3.dp)
                             .clickable {
                                 // Wyświetlenie dymku z tekstem po kliknięciu
                                 Toast.makeText(context, "Kurs obsługiwany pojazdem z niską podłogą w środkowym członie.", Toast.LENGTH_SHORT).show()
-                            }
+                            },
+                        tint = DarkText
                     )
                 }
 
                 if (timeData.lowFloorBus == true) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.wheel),
                         contentDescription = "Kurs obsługiwany pojazdem niskopodłogowym.",
                         modifier = Modifier
-                            .size(32.dp) // Ustawienie rozmiaru obrazka
+                            .size(iconSize) // Ustawienie rozmiaru obrazka
                             .padding(start = 3.dp)
                             .clickable {
                                 // Wyświetlenie dymku z tekstem po kliknięciu
                                 Toast.makeText(context, "Kurs obsługiwany pojazdem niskopodłogowym.", Toast.LENGTH_SHORT).show()
-                            }
+                            },
+                        tint = DarkText
+
                     )
                 }
 
                 if (timeData.lfRamp == true) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.wheel_ramp),
                         contentDescription = "Kurs obsługiwany pojazdem niskopodłogowym z rampą.",
                         modifier = Modifier
-                            .size(32.dp) // Ustawienie rozmiaru obrazka
+                            .size(iconSize) // Ustawienie rozmiaru obrazka
                             .padding(start = 3.dp)
                             .clickable {
                                 // Wyświetlenie dymku z tekstem po kliknięciu
                                 Toast.makeText(context, "Kurs obsługiwany pojazdem niskopodłogowym z rampą.", Toast.LENGTH_SHORT).show()
-                            }
+                            },
+                        tint = DarkText
                     )
                 }
 
                 if (timeData.leRamp == true) {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.wheel_ramp_star),
                         contentDescription = "Kurs obsługiwany pojazdem z niską podłogą w środkowym członie z rampą.",
                         modifier = Modifier
-                            .size(32.dp) // Ustawienie rozmiaru obrazka
+                            .size(iconSize) // Ustawienie rozmiaru obrazka
                             .padding(start = 3.dp)
                             .clickable {
                                 // Wyświetlenie dymku z tekstem po kliknięciu
                                 Toast.makeText(context, "Kurs obsługiwany pojazdem z niską podłogą w środkowym członie z rampą.", Toast.LENGTH_SHORT).show()
-                            }
+                            },
+                        tint = DarkText
                     )
                 }
 

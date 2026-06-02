@@ -1,6 +1,7 @@
 package com.example.peka.modules
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,7 +18,6 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -41,12 +41,16 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.peka.R
 import com.example.peka.database.AlarmDao
 import com.example.peka.database.FavoriteStopDao
-import com.example.peka.screens.AlarmScreen
 import com.example.peka.screens.LiveSearchScreen
+import com.example.peka.ui.theme.DarkAccent
 import com.example.peka.ui.theme.DarkText
 import com.example.peka.ui.theme.HalfTransparentDarkBackground
 import com.example.peka.ui.theme.TransparentDarkBackground
@@ -92,15 +96,25 @@ fun MainNavigationContainer(
         drawerState = drawerState,
         gesturesEnabled = currentRoute != Screen.Map.route,
         drawerContent = {
-            ModalDrawerSheet(modifier = Modifier.width(300.dp)) {
-                Row() {
-                    Text(
-                        text = "ViMo",
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(16.dp)
-                    )
+            ModalDrawerSheet(
+                modifier = Modifier.width(300.dp).padding(top=50.dp),
+                drawerContainerColor = DarkBackground,
+                drawerTonalElevation = 20.dp,
+                drawerShape = RoundedCornerShape(20.dp),
+                drawerContentColor = DarkText) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
+                    Image(painter = painterResource(R.drawable.vimo), contentDescription = "Ikona", modifier = Modifier.padding(start = 16.dp).height(44.dp))
 
-                    IconButton(onClick = { coroutineScope.launch { drawerState.close() } }) {
+                    Text(text = "ViMo",
+                        fontWeight = FontWeight.Bold,
+                        color = DarkAccent,
+                        fontSize = 24.sp,
+                        letterSpacing = 6.sp,
+                        modifier = Modifier.padding(horizontal = 16.dp))
+
+                    Spacer(Modifier.weight(1f))
+
+                    IconButton(modifier = Modifier.padding(horizontal = 16.dp),onClick = { coroutineScope.launch { drawerState.close() } }) {
                         Icon(Icons.Default.Close, contentDescription = "Zamknij menu")
                     }
                 }
@@ -162,7 +176,7 @@ fun MainNavigationContainer(
                     modifier = Modifier
                         .background(brush = customBrush)
                         .windowInsetsPadding(WindowInsets.statusBars)
-                        .padding(0.dp, top = 5.dp, bottom = 15.dp, end = 0.dp)
+                        .padding(0.dp, top = 5.dp, bottom = 0.dp, end = 0.dp)
                         .height(85.dp)
                         .fillMaxWidth(),
 
@@ -209,7 +223,7 @@ fun MainNavigationContainer(
                         },
                         placeholder = { Text("Szukaj przystanku...", color = DarkText, fontSize = 14.sp, lineHeight = 10.sp) },
                         singleLine = true,
-                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Szukaj", tint = DarkText) },
+                        leadingIcon = { Icon(Icons.Default.Search, modifier = Modifier.padding(start=5.dp), contentDescription = "Szukaj", tint = DarkText) },
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f)
@@ -337,7 +351,6 @@ fun MainNavigationContainer(
                     .fillMaxSize()
             ) {
                 composable(Screen.Favorites.route) { FavoritesScreen(
-                    navController = bottomNavController,
                     rootNavController = rootNavController,
                     onLogout = onLogoutClick,
                     modifier = Modifier.padding(innerPadding),

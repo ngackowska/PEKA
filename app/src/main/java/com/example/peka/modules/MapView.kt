@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.peka.BuildConfig
 import com.example.peka.R
-import com.example.peka.api.TimeData
 import com.example.peka.database.BusStop
 import com.example.peka.viewmodels.DashboardViewModel
 import org.osmdroid.util.GeoPoint
@@ -208,17 +207,17 @@ fun updateVisibleMarkers(
     }
 
     visibleStops.forEach { stop ->
-        var iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.location_on)?.mutate()
+        var iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.bus_stop)?.mutate()
 
         val isSelected = (selectedStop != null && selectedStop.stop_code == stop.stop_code)
 
         if (iconDrawable != null) {
             if (isSelected) {
                 // Jeśli to ten kliknięty -> nadaj kolor wybrany
-                iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.location_on_clicked)?.mutate()
+                iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.bus_stop_clicked)?.mutate()
             } else {
                 // W przeciwnym razie -> nadaj zwykły kolor
-                iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.location_on)?.mutate()
+                iconDrawable = ContextCompat.getDrawable(mapView.context, R.drawable.bus_stop)?.mutate()
             }
         }
 

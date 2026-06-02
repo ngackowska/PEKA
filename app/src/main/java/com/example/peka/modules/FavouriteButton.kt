@@ -11,9 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
 import com.example.peka.database.BusStop
 import com.example.peka.database.FavoriteStopDao
+import com.example.peka.ui.theme.DarkAccent
+import com.example.peka.ui.theme.DarkText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -24,13 +26,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun FavoriteButton(
     stop: BusStop,
-    dao: FavoriteStopDao // Przekazujesz DAO lub ViewModel
+    dao: FavoriteStopDao, // Przekazujesz DAO lub ViewModel,
+    modifier: Modifier,
 ) {
     // Zbieramy stan z bazy. Jeśli baza jest pusta lub ładuje, domyślnie false.
     val isFav by dao.isFavorite(stop.stop_code).collectAsState(initial = false)
     val coroutineScope = rememberCoroutineScope()
 
     IconButton(
+        modifier = modifier,
         onClick = {
             // ZMIANA TUTAJ: Wymuszamy uruchomienie w tle (IO)
             coroutineScope.launch(Dispatchers.IO) {
@@ -74,7 +78,7 @@ fun FavoriteButton(
         Icon(
             imageVector = if (isFav) Icons.Filled.Favorite else Icons.Default.FavoriteBorder,
             contentDescription = "Ulubiony",
-            tint = if (isFav) Color.Red else Color.Gray
+            tint = if (isFav) DarkAccent else DarkText
         )
     }
 }
