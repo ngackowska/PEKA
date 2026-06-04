@@ -122,6 +122,21 @@ fun MainNavigationContainer(
                 HorizontalDivider()
 
                 NavigationDrawerItem(
+                    label = { Text("Dashboard") },
+                    selected = currentRoute == Screen.Dashboard.route, // Opcjonalne: podświetla element, jeśli użytkownik już jest na tym ekranie
+                    onClick = {
+                        // 1. Zamykamy menu po kliknięciu
+                        coroutineScope.launch { drawerState.close() }
+
+                        // 2. Wywołujemy nawigację do ekranu Search
+                        bottomNavController.navigate(Screen.Dashboard.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+
+                NavigationDrawerItem(
                     label = { Text("Wyszukiwanie zaawansowane") },
                     selected = currentRoute == Screen.Search.route, // Opcjonalne: podświetla element, jeśli użytkownik już jest na tym ekranie
                     onClick = {
@@ -136,16 +151,16 @@ fun MainNavigationContainer(
                     }
                 )
 
-                NavigationDrawerItem(
-                    label = { Text("O autorach") },
-                    selected = false,
-                    onClick = { /* TODO: Nawigacja do ekranu o autorach */ }
-                )
-                NavigationDrawerItem(
-                    label = { Text("Ustawienia") },
-                    selected = false,
-                    onClick = { /* TODO: Nawigacja do ustawień */ }
-                )
+//                NavigationDrawerItem(
+//                    label = { Text("O autorach") },
+//                    selected = false,
+//                    onClick = { /* TODO: Nawigacja do ekranu o autorach */ }
+//                )
+//                NavigationDrawerItem(
+//                    label = { Text("Ustawienia") },
+//                    selected = false,
+//                    onClick = { /* TODO: Nawigacja do ustawień */ }
+//                )
                 NavigationDrawerItem(
                     label = { Text("Wyloguj się") },
                     selected = false,
