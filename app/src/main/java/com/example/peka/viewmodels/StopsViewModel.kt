@@ -4,11 +4,15 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.peka.database.BusStop
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Source
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class StopsViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -19,6 +23,18 @@ class StopsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val sharedPreferences = application.getSharedPreferences("peka_prefs", Context.MODE_PRIVATE)
     private val VERSION_KEY = "stops_version"
+
+
+
+    private val _streetSearchResults = MutableStateFlow<List<String>>(emptyList())
+    val streetSearchResults: StateFlow<List<String>> = _streetSearchResults
+
+    private val _isSearchLoading = MutableStateFlow(false)
+    val isSearchLoading: StateFlow<Boolean> = _isSearchLoading
+
+    private var searchJob: kotlinx.coroutines.Job? = null
+
+
 
 //    init {
 //        val settings = FirebaseFirestoreSettings.Builder()
@@ -33,6 +49,41 @@ class StopsViewModel(application: Application) : AndroidViewModel(application) {
     init {
         checkAndFetchStops()
     }
+
+
+
+    fun searchByStreet(query: String) {
+        // Anulujemy poprzednie zapytanie, jeśli użytkownik wpisał kolejną literę
+        searchJob?.cancel()
+
+        if (query.isBlank()) {
+            _streetSearchResults.value = emptyList()
+            return
+        }
+
+        searchJob = viewModelScope.launch(Dispatchers.IO) {
+            delay(500) // Czekamy pół sekundy, aż użytkownik przestanie pisać
+
+            _isSearchLoading.value = true
+            try {
+                val p0Json = "{\"name\":\"$query\"}"
+                // Korzystamy z API
+                val response = com.example.peka.api.pekaApiService.getBollardsByStreet(p0 = p0Json)
+
+                // Wyciągamy z odpowiedzi same unikalne nazwy przystanków
+                val distinctNames = response.success.bollards.map { it.bollard.name }.distinct()
+                _streetSearchResults.value = distinctNames
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _streetSearchResults.value = emptyList()
+            } finally {
+                _isSearchLoading.value = false
+            }
+        }
+    }
+
+
 
     private fun checkAndFetchStops() {
         val localVersion = sharedPreferences.getInt(VERSION_KEY, 0)
