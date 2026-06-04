@@ -52,6 +52,15 @@ fun LiveSearchScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
+
+        if (uniqueStops.isEmpty() && searchQuery.isBlank()) {
+            Text(
+                text = "Tu pojawią się wyniki wyszukiwania.",
+                color = Color.White,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+        }
+
         if (uniqueStops.isEmpty() && searchQuery.isNotBlank()) {
             Text(
                 text = "Brak wyników dla: $searchQuery",
