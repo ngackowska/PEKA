@@ -30,6 +30,9 @@ import kotlinx.coroutines.isActive
 
 import androidx.core.content.ContextCompat
 import android.content.pm.PackageManager
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import com.example.peka.database.AlarmDao
 import com.example.peka.database.FavoriteStopDao
@@ -147,8 +150,14 @@ fun DashboardScreen(
             }
         } else {
             item {
-                CircularProgressIndicator(color = Color(0xFF20CE55))
+                Box(
+                    modifier = Modifier.fillParentMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Color(0xFF20CE55))
+                }
             }
+
         }
     }
 
