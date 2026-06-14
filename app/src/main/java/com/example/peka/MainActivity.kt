@@ -116,7 +116,7 @@ fun AppNavigation(
 
         composable(route = "bollards_list/{stopName}") { backStackEntry ->
             val stopName = backStackEntry.arguments?.getString("stopName") ?: ""
-            BollardsScreen(navController = navController, stopName = stopName)
+            BollardsScreen(navController = navController, stopName = stopName, favoriteStopDao = favoriteStopDao)
         }
 
         composable("alarm_screen/{stopCode}/{stopName}") { backStackEntry ->

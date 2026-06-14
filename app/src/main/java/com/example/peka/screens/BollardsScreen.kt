@@ -30,6 +30,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.peka.R
+import com.example.peka.database.FavoriteStopDao
+import com.example.peka.modules.FavoriteButton
 import com.example.peka.modules.getStaticMapUrl
 import com.example.peka.ui.theme.DarkBackground
 import com.example.peka.ui.theme.DarkCardBackground
@@ -50,6 +52,7 @@ fun BollardsScreen(
     stopName: String,
     stopsViewModel: StopsViewModel = viewModel(),
     viewModel: BollardsViewModel = viewModel(),
+    favoriteStopDao: FavoriteStopDao
 ) {
     val allStops by stopsViewModel.allStops.collectAsState()
 
@@ -185,72 +188,94 @@ fun BollardsScreen(
 
 
 
+                                Box() {
 
-                                Column() {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth()
-                                            .padding(top = 14.dp, start = 22.dp, end = 22.dp),
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Row(verticalAlignment = Alignment.Bottom){
-                                            Text(text = "Nazwa", fontWeight = FontWeight.Light, fontSize = 16.sp,modifier = Modifier.alignByBaseline(), color = DarkText)
-                                            Spacer(modifier = Modifier.width(8.dp))
-                                            Text(text = item.bollard.name, fontWeight = FontWeight.Bold, fontSize = 20.sp, modifier = Modifier.alignByBaseline(), color = DarkText)
-                                        }
-                                        Row(verticalAlignment = Alignment.Bottom){
-                                            Text(text = item.bollard.tag, fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.alignByBaseline(), color = DarkText)
-                                        }
-                                    }
-
-
-                                    Spacer(modifier = Modifier.height(12.dp))
-
-                                    Card(
-                                        shape = RoundedCornerShape(10.dp),
-                                        modifier = Modifier
-                                            .padding(20.dp, 0.dp)
-                                            .insetNeumorphicShadow(10.dp, 10.dp)
-                                            ,
-                                        colors = CardColors(
-                                            containerColor = DarkBackground,
-                                            contentColor = DarkText,
-                                            disabledContainerColor = DarkBackground,
-                                            disabledContentColor = DarkText
-                                        )
-
-                                    ){
-                                        LazyColumn(
-                                            modifier = Modifier
-                                                .padding(15.dp, 0.dp)
-                                                .fillMaxWidth() // Rozciąga się na boki
-                                                .heightIn(max = 94.dp) // <-- TUTAJ: Sztywna wysokość idealnie na 3 elementy!  // Lekkie tło dla widoczności obszaru
-                                                .nestedScroll(consumeAllScrollBehavior)    ,
-                                            contentPadding = PaddingValues(0.dp), // Usuwamy wewnętrzny margines, żeby łatwiej liczyć // Odstępy między elementami
+                                    Column() {
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth()
+                                                .padding(top = 14.dp, start = 22.dp, end = 22.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
-                                            item{Spacer(Modifier.height(10.dp))}
-                                            items(item.directions) { dir ->
-                                                Text("${dir.lineName} -> ${dir.direction}", fontSize = 14.sp, color = DarkHeaderText)
+                                            Row(verticalAlignment = Alignment.Bottom) {
+                                                Text(
+                                                    text = "Nazwa",
+                                                    fontWeight = FontWeight.Light,
+                                                    fontSize = 16.sp,
+                                                    modifier = Modifier.alignByBaseline(),
+                                                    color = DarkText
+                                                )
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                                Text(
+                                                    text = item.bollard.name,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 20.sp,
+                                                    modifier = Modifier.alignByBaseline(),
+                                                    color = DarkText
+                                                )
                                             }
-                                            item{Spacer(Modifier.height(10.dp))}
+                                            Row(verticalAlignment = Alignment.Bottom) {
+                                                Text(
+                                                    text = item.bollard.tag,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 16.sp,
+                                                    modifier = Modifier.alignByBaseline(),
+                                                    color = DarkText
+                                                )
+                                            }
+                                        }
+
+
+                                        Spacer(modifier = Modifier.height(12.dp))
+
+                                        Card(
+                                            shape = RoundedCornerShape(10.dp),
+                                            modifier = Modifier
+                                                .padding(20.dp, 0.dp)
+                                                .insetNeumorphicShadow(10.dp, 10.dp),
+                                            colors = CardColors(
+                                                containerColor = DarkBackground,
+                                                contentColor = DarkText,
+                                                disabledContainerColor = DarkBackground,
+                                                disabledContentColor = DarkText
+                                            )
+
+                                        ) {
+                                            LazyColumn(
+                                                modifier = Modifier
+                                                    .padding(15.dp, 0.dp)
+                                                    .fillMaxWidth() // Rozciąga się na boki
+                                                    .heightIn(max = 94.dp) // <-- TUTAJ: Sztywna wysokość idealnie na 3 elementy!  // Lekkie tło dla widoczności obszaru
+                                                    .nestedScroll(consumeAllScrollBehavior),
+                                                contentPadding = PaddingValues(0.dp), // Usuwamy wewnętrzny margines, żeby łatwiej liczyć // Odstępy między elementami
+                                            ) {
+                                                item { Spacer(Modifier.height(10.dp)) }
+                                                items(item.directions) { dir ->
+                                                    Text(
+                                                        "${dir.lineName} -> ${dir.direction}",
+                                                        fontSize = 14.sp,
+                                                        color = DarkHeaderText
+                                                    )
+                                                }
+                                                item { Spacer(Modifier.height(10.dp)) }
+
+                                            }
+
 
                                         }
 
 
-                                    }
 
+                                        BoxWithConstraints(
+                                            modifier = Modifier
+                                                .height(150.dp)
+                                                .fillMaxWidth()
+                                                .padding(20.dp)
+                                                .background(TransparentDarkBackground),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            // Kopiujemy stan do lokalnej zmiennej dla bezpiecznego "Smart Cast"
 
-
-                                    BoxWithConstraints(
-                                        modifier = Modifier
-                                            .height(150.dp)
-                                            .fillMaxWidth()
-                                            .padding(20.dp)
-                                            .background(TransparentDarkBackground),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        // Kopiujemy stan do lokalnej zmiennej dla bezpiecznego "Smart Cast"
-
-                                        // Sprawdzamy, czy dane już się pobrały (czy nie są nullem)
+                                            // Sprawdzamy, czy dane już się pobrały (czy nie są nullem)
 
 
                                             val details = stopsMap[item.bollard.tag]
@@ -266,7 +291,10 @@ fun BollardsScreen(
 
                                                 Card(
                                                     shape = RoundedCornerShape(10.dp),
-                                                    modifier = Modifier.insetNeumorphicShadow(10.dp,10.dp)
+                                                    modifier = Modifier.insetNeumorphicShadow(
+                                                        10.dp,
+                                                        10.dp
+                                                    )
 
                                                 ) {
                                                     AsyncImage(
@@ -292,14 +320,35 @@ fun BollardsScreen(
                                                         // w górę o połowę jej wysokości (40dp / 2 = 20dp).
                                                         .offset(y = (12).dp)
                                                 )
+                                            } else {
+                                                // CO POKAZAĆ, GDY DANE JESZCZE SIĘ POBIERAJĄ?
+                                                // Możesz tu dać np. kręcące się kółko ładowania albo puste tło
+                                                CircularProgressIndicator(
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
                                             }
-                                         else {
-                                            // CO POKAZAĆ, GDY DANE JESZCZE SIĘ POBIERAJĄ?
-                                            // Możesz tu dać np. kręcące się kółko ładowania albo puste tło
-                                            CircularProgressIndicator(
-                                                color = MaterialTheme.colorScheme.primary
-                                            )
                                         }
+                                    }
+                                    val details = stopsMap[item.bollard.tag]
+                                    if (details != null){
+                                        Card(
+                                            Modifier.align(Alignment.BottomStart),
+                                            shape = RoundedCornerShape(20.dp),
+                                            colors = CardColors(
+                                                containerColor = DarkCardBackground,
+                                                contentColor = DarkText,
+                                                disabledContainerColor = DarkCardBackground,
+                                                disabledContentColor = DarkText
+                                            )
+                                        ){
+                                            FavoriteButton(details,favoriteStopDao,
+                                                modifier =
+                                                    Modifier.padding(5.dp,2.dp,2.dp,5.dp)
+                                                ,)
+
+                                        }
+
+
                                     }
                                 }
                             }
