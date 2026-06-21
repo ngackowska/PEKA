@@ -1,0 +1,31 @@
+<!--
+  ~ Copyright (C) 2026 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="150.03dp"
+    android:height="150.03dp"
+    android:viewportWidth="150.03"
+    android:viewportHeight="150.03">
+  <path
+      android:pathData="M0.07,0L149.96,0A0.07,0.31 0,0 1,150.03 0.31L150.03,149.72A0.07,0.31 0,0 1,149.96 150.03L0.07,150.03A0.07,0.31 0,0 1,0 149.72L0,0.31A0.07,0.31 0,0 1,0.07 0z"
+      android:strokeWidth="1.56104"
+      android:fillColor="#00000000"
+      android:strokeColor="#00000000"
+      android:strokeLineCap="square"/>
+  <path
+      android:pathData="m69.28,107.97 l-14.76,14.47q-1.58,1.58 -3.94,1.58 -2.36,0 -3.94,-1.72 -1.72,-1.58 -1.72,-3.94 0,-2.36 1.72,-4.08l22.64,-22.64l0,-11.46l-11.46,0l-22.79,22.79q-1.58,1.58 -3.94,1.58 -2.36,0 -4.08,-1.72 -1.58,-1.58 -1.58,-3.94 0,-2.36 1.58,-3.94L41.48,80.17L23.28,80.17q-2.44,0 -4.01,-1.65Q17.69,76.87 17.69,74.44 17.69,72 19.34,70.35 20.99,68.71 23.43,68.71L41.48,68.71L27.01,54.09q-1.58,-1.58 -1.58,-3.94 0,-2.36 1.72,-4.08 1.58,-1.58 3.94,-1.58 2.36,0 4.08,1.58l22.64,22.64l11.46,0l0,-11.46L46.5,34.6q-1.58,-1.58 -1.58,-3.94 0,-2.36 1.72,-4.08 1.58,-1.58 3.94,-1.58 2.36,0 3.94,1.58l14.76,14.33l0,-18.06q0,-2.44 1.65,-4.08 1.65,-1.65 4.08,-1.65 2.44,0 4.08,1.65 1.65,1.65 1.65,4.08l0,18.06l14.62,-14.33q1.58,-1.58 3.94,-1.58 2.36,0 4.08,1.58 1.58,1.72 1.58,4.08 0,2.36 -1.58,3.94l-22.64,22.64l0,11.46l11.46,0l22.64,-22.64q1.58,-1.58 3.94,-1.58 2.36,0 4.08,1.72 1.58,1.58 1.58,3.94 0,2.36 -1.58,3.94l-14.33,14.62l18.06,0q2.44,0 4.08,1.65 1.65,1.65 1.65,4.08 0,2.44 -1.65,4.08Q129.04,80.17 126.6,80.17L108.55,80.17l14.33,14.76q1.58,1.58 1.58,3.94 0,2.36 -1.58,3.94 -1.72,1.72 -4.08,1.72 -2.36,0 -3.94,-1.72L92.21,80.17l-11.46,0l0,11.46l22.64,22.79q1.58,1.58 1.58,3.94 0,2.36 -1.72,4.08 -1.58,1.58 -3.94,1.58 -2.36,0 -3.94,-1.58L80.75,107.97l0,18.2q0,2.44 -1.65,4.01Q77.45,131.76 75.01,131.76 72.58,131.76 70.93,130.11 69.28,128.46 69.28,126.03Z"
+      android:fillColor="#434343"
+      android:strokeColor="#00000000"/>
+</vector>

@@ -1,0 +1,52 @@
+<!--
+  ~ Copyright (C) 2026 The Android Open Source Project
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<vector xmlns:aapt="http://schemas.android.com/aapt" xmlns:android="http://schemas.android.com/apk/res/android" android:height="36dp" android:viewportHeight="960" android:viewportWidth="960" android:width="36dp">
+      
+    <path android:pathData="m480,1.64c-106.12,0 -199.52,37.12 -280.16,111.48 -80.64,74.37 -120.94,174.27 -120.94,299.61 -0,83.56 33.26,174.32 99.69,272.5C245.02,783.42 345.47,889.82 480,1004.3 614.53,889.82 714.98,783.42 781.41,685.23c66.43,-98.18 99.69,-188.94 99.69,-272.5 0,-125.34 -40.3,-225.24 -120.94,-299.61C679.52,38.76 586.12,1.64 480,1.64ZM393.44,288.05h208.98c5.85,0 10.55,20.9 10.55,46.88v145.94c0,25.97 -4.7,46.95 -10.55,46.95L393.44,527.81c-5.85,0 -10.55,-20.98 -10.55,-46.95v-145.94c0,-25.97 4.7,-46.88 10.55,-46.88z" android:strokeWidth="1.25342">
+            
+        <aapt:attr name="android:fillColor">
+                  
+            <gradient android:centerX="477.91" android:centerY="408.94" android:gradientRadius="401.06" android:type="radial">
+                        
+                <item android:color="#FF000000" android:offset="0"/>
+                        
+                <item android:color="#00000000" android:offset="1"/>
+                      
+            </gradient>
+                
+        </aapt:attr>
+          
+    </path>
+      
+    <path android:pathData="m480.35,319.95c-44.63,-0 -80.55,35.99 -80.55,80.63 0,44.63 35.91,80.55 80.55,80.55 44.63,0 80.47,-35.91 80.47,-80.55 0,-44.63 -35.84,-80.63 -80.47,-80.63z" android:strokeWidth="1.29068">
+            
+        <aapt:attr name="android:fillColor">
+                  
+            <gradient android:centerX="478.68" android:centerY="406.33" android:gradientRadius="266.43" android:type="radial">
+                        
+                <item android:color="#00000000" android:offset="0"/>
+                        
+                <item android:color="#FF000000" android:offset="1"/>
+                      
+            </gradient>
+                
+        </aapt:attr>
+          
+    </path>
+      
+    <path android:fillColor="#149c3d" android:pathData="M536.5,456.5Q560,433 560,400 560,367 536.5,343.5 513,320 480,320q-33,0 -56.5,23.5 -23.5,23.5 -23.5,56.5 0,33 23.5,56.5 23.5,23.5 56.5,23.5 33,0 56.5,-23.5zM480,880Q319,743 239.5,625.5 160,508 160,408q0,-150 96.5,-239 96.5,-89 223.5,-89 127,0 223.5,89 96.5,89 96.5,239 0,100 -79.5,217.5Q641,743 480,880Z"/>
+    
+</vector>
